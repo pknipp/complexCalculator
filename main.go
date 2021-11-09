@@ -182,13 +182,7 @@ func main() {
 //
 	router := gin.New()
 	router.Use(gin.Logger())
-	router.LoadHTMLGlob("index.html")//"templates/*.tmpl.html")
-	// router.Static("/static", "static")
-//
-	// http.HandleFunc("/", handler)
-	// router.GET("/", func(c *gin.Context) {
-		// c.HTML(http.StatusOK, "index.tmpl.html", nil)
-	// })
+	router.LoadHTMLGlob("index.html")
 	router.GET("/", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "index.html", nil)
 	})
@@ -200,7 +194,6 @@ func main() {
 		expression = regexp.MustCompile("div").ReplaceAllString(expression, "/")
 		expression = regexp.MustCompile("DIV").ReplaceAllString(expression, "/")
 		expression = regexp.MustCompile(`[dD]`).ReplaceAllString(expression, "/")
-		// expression = regexp.MustCompile(`D`).ReplaceAllString(expression, "/")
 		c.String(http.StatusOK, "your expression = " + expression + "\n")
 		resultString := handler(expression)
 		c.String(http.StatusOK, "numerical value = " + resultString)
