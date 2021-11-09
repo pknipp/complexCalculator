@@ -9,3 +9,4 @@ Instructions:
 - Avoid any "special" characters?
 - Avoid spaces.
 - Use ** for exponentiation or ^ (but the latter'll be uglier)
+- Instead of "/", use "d" (for "divided by)
