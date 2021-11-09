@@ -194,7 +194,9 @@ func main() {
 	})
 	router.GET("/:expression", func(c *gin.Context) {
 		expression := c.Param("expression")
+		fmt.Println("router.GET says that expression = ", expression)
 		resultString := handler(expression)
+		fmt.Println("rounter.GET says that resultString = ", resultString)
 		c.String(http.StatusOK, "numerical value for expression above = ", resultString)
 	})
 	// http.ListenAndServe(":8000", nil)
