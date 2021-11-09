@@ -129,47 +129,42 @@ func parseExpression (expression string) (complex128) {
 }
 
 func handler(expression string) string {
-	if expression != "/favicon.ico" {
-		if len(expression) > 1 {
-			expression = expression[1:]
-			result := parseExpression(expression)
-			realPart := strconv.FormatFloat(real(result), 'f', -1, 64)
-			imagPart := ""
-			// DRY the following with math.abs ASA I figure out how to import it.
-			if imag(result) > 0 {
-				imagPart = strconv.FormatFloat(imag(result), 'f', -1, 64)
-			} else {
-				imagPart = strconv.FormatFloat(imag(-result), 'f', -1, 64)
-			}
-			resultString := ""
-			if real(result) != 0 {
-				resultString += realPart
-			}
-			if real(result) != 0 && imag(result) != 0 {
-				// DRY the following after finding some sort of "sign" function
-				if imag(result) > 0 {
-					resultString += " + "
-				} else {
-					resultString += " - "
-				}
-			}
-			if imag(result) != 0 {
-				if real(result) == 0 && imag(result) < 0 {
-					resultString += " - "
-				}
-				// DRY the following after figuring out how to import math.abs
-				if imag(result) != 1 && imag(result) != -1 {
-					resultString += imagPart
-				}
-				resultString += " i"
-			}
-			if real(result) == 0 && imag(result) == 0 {
-				resultString = "0"
-			}
-			return resultString
+	// expression = expression[1:]
+	result := parseExpression(expression)
+	realPart := strconv.FormatFloat(real(result), 'f', -1, 64)
+	imagPart := ""
+	// DRY the following with math.abs ASA I figure out how to import it.
+	if imag(result) > 0 {
+		imagPart = strconv.FormatFloat(imag(result), 'f', -1, 64)
+	} else {
+		imagPart = strconv.FormatFloat(imag(-result), 'f', -1, 64)
+	}
+	resultString := ""
+	if real(result) != 0 {
+		resultString += realPart
+	}
+	if real(result) != 0 && imag(result) != 0 {
+		// DRY the following after finding some sort of "sign" function
+		if imag(result) > 0 {
+			resultString += " + "
+		} else {
+			resultString += " - "
 		}
 	}
-	return ""
+	if imag(result) != 0 {
+		if real(result) == 0 && imag(result) < 0 {
+			resultString += " - "
+		}
+		// DRY the following after figuring out how to import math.abs
+		if imag(result) != 1 && imag(result) != -1 {
+			resultString += imagPart
+		}
+		resultString += " i"
+	}
+	if real(result) == 0 && imag(result) == 0 {
+		resultString = "0"
+	}
+	return resultString
 }
 
 // func handlerOld(w http.ResponseWriter, r*http.Request) {
