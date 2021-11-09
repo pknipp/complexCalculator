@@ -48,7 +48,7 @@ func parseExpression (expression string) (complex128) {
 				}
 			}
 			return parseExpression(expression[1: nExpression]), expression[nExpression + 1:]
-		} else if leadingChar == "i" || leadingChar == "j" {
+		} else if leadingChar == "i" {
 			return complex(0, 1), expression[1:]
 		} else {
 			p := 1
@@ -192,6 +192,7 @@ func main() {
 	router.GET("/:expression", func(c *gin.Context) {
 		expression := c.Param("expression")
 		expression = regexp.MustCompile(" ").ReplaceAllString(expression, "")
+		expression = regexp.MustCompile("j").ReplaceAllString(expression, "i")
 		expression = regexp.MustCompile(`\*\*`).ReplaceAllString(expression, "^")
 		expression = regexp.MustCompile("div").ReplaceAllString(expression, "/")
 		expression = regexp.MustCompile("DIV").ReplaceAllString(expression, "/")
