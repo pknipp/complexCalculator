@@ -2,16 +2,16 @@ package main
 
 import (
 	"io"
-	// "log"
+	"log"
 	"math/cmplx"
 	"net/http"
-	// "os"
+	"os"
 	"regexp"
 	"strconv"
 	"strings"
 
-	// "github.com/gin-gonic/gin"
-	// _ "github.com/heroku/x/hmetrics/onload"
+	"github.com/gin-gonic/gin"
+	_ "github.com/heroku/x/hmetrics/onload"
 )
 
 func calculate(z1 complex128, op string, z2 complex128) complex128 {
@@ -129,23 +129,23 @@ func parseExpression (expression string) (complex128) {
 }
 
 func main() {
-	// port := os.Getenv("PORT")
+	port := os.Getenv("PORT")
+
+	if port == "" {
+		log.Fatal("$PORT must be set")
+	}
 //
-	// if port == "" {
-		// log.Fatal("$PORT must be set")
-	// }
-
-	// router := gin.New()
-	// router.Use(gin.Logger())
-	// router.LoadHTMLGlob("templates/*.tmpl.html")
-	// router.Static("/static", "static")
-
-	// router.GET("/", func(c *gin.Context) {
-		// c.HTML(http.StatusOK, "index.tmpl.html", nil)
-	// })
+	router := gin.New()
+	router.Use(gin.Logger())
+	router.LoadHTMLGlob("templates/*.tmpl.html")
+	router.Static("/static", "static")
+//
+	router.GET("/", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "index.tmpl.html", nil)
+	})
 	http.HandleFunc("/", handler)
-	http.ListenAndServe(":8000", nil)
-	// router.Run(":" + port)
+	// http.ListenAndServe(":8000", nil)
+	router.Run(":" + port)
 
 }
 
