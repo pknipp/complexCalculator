@@ -140,12 +140,12 @@ func main() {
 	router.LoadHTMLGlob("templates/*.tmpl.html")
 	router.Static("/static", "static")
 
-	router.GET("/", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "index.tmpl.html", nil)
-	})
-
-	router.Run(":" + port)
+	// router.GET("/", func(c *gin.Context) {
+		// c.HTML(http.StatusOK, "index.tmpl.html", nil)
+	// })
 	http.HandleFunc("/", handler)
+	router.Run(":" + port)
+
 }
 
 func handler(w http.ResponseWriter, r*http.Request) {
