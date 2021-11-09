@@ -77,7 +77,6 @@ func parseExpression (expression string) (complex128) {
 		num complex128
 	}
 
-	expression = strings.ReplaceAll(expression, " ", "")
 	if expression[0:1] == "+" {
 		expression = expression[1:]
 	}
@@ -192,12 +191,13 @@ func main() {
 	})
 	router.GET("/:expression", func(c *gin.Context) {
 		expression := c.Param("expression")
+		expression = regexp.MustCompile(" ").ReplaceAllString(expression, "")
 		expression = regexp.MustCompile(`\*\*`).ReplaceAllString(expression, "^")
-		expression = regexp.MustCompile(`div`).ReplaceAllString(expression, "/")
-		expression = regexp.MustCompile(`DIV`).ReplaceAllString(expression, "/")
-		expression = regexp.MustCompile(`d`).ReplaceAllString(expression, "/")
-		expression = regexp.MustCompile(`D`).ReplaceAllString(expression, "/")
-		c.String(http.StatusOK, "your expression = " + expression)
+		expression = regexp.MustCompile("div"|"DIV").ReplaceAllString(expression, "/")
+		// expression = regexp.MustCompile(`DIV`).ReplaceAllString(expression, "/")
+		expression = regexp.MustCompile([dD]).ReplaceAllString(expression, "/")
+		// expression = regexp.MustCompile(`D`).ReplaceAllString(expression, "/")
+		c.String(http.StatusOK, "your expression = " + expression + "\n")
 		resultString := handler(expression)
 		c.String(http.StatusOK, "numerical value = " + resultString)
 	})
