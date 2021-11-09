@@ -1,7 +1,7 @@
 package main
 
 import (
-	"io"
+	// "io"
 	"log"
 	"math/cmplx"
 	"net/http"
@@ -166,9 +166,10 @@ func handler(expression string) string {
 			if real(result) == 0 && imag(result) == 0 {
 				resultString = "0"
 			}
+			return resultString
 		}
 	}
-	return resultString
+	return ""
 }
 
 // func handlerOld(w http.ResponseWriter, r*http.Request) {
