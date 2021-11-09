@@ -4,7 +4,7 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"math/cmplex"
+	"math/cmplx"
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/heroku/x/hmetrics/onload"
