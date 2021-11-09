@@ -36,7 +36,10 @@ func parseExpression (expression string) (complex128) {
 	// m1 := regexp.MustCompile(`\*\*`)
 	// expression = m1.ReplaceAllString(expression, "^")
 	expression = regexp.MustCompile(`\*\*`).ReplaceAllString(expression, "^")
-	expression = regexp.MustCompile(`\`).ReplaceAllString(expression, "/")
+	expression = regexp.MustCompile(`div`).ReplaceAllString(expression, "/")
+	expression = regexp.MustCompile(`DIV`).ReplaceAllString(expression, "/")
+	expression = regexp.MustCompile(`d`).ReplaceAllString(expression, "/")
+	expression = regexp.MustCompile(`D`).ReplaceAllString(expression, "/")
 	getNumber := func(expression string) (complex128, string){
 		leadingChar := expression[0:1]
 		if leadingChar == "(" {
