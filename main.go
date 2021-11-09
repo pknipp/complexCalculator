@@ -195,7 +195,7 @@ func main() {
 		expression = regexp.MustCompile(`\*\*`).ReplaceAllString(expression, "^")
 		expression = regexp.MustCompile("div"|"DIV").ReplaceAllString(expression, "/")
 		// expression = regexp.MustCompile(`DIV`).ReplaceAllString(expression, "/")
-		expression = regexp.MustCompile([dD]).ReplaceAllString(expression, "/")
+		expression = regexp.MustCompile(`[dD]`).ReplaceAllString(expression, "/")
 		// expression = regexp.MustCompile(`D`).ReplaceAllString(expression, "/")
 		c.String(http.StatusOK, "your expression = " + expression + "\n")
 		resultString := handler(expression)
