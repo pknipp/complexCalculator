@@ -128,31 +128,7 @@ func parseExpression (expression string) (complex128) {
 	return z
 }
 
-func main() {
-	port := os.Getenv("PORT")
-
-	if port == "" {
-		log.Fatal("$PORT must be set")
-	}
-//
-	router := gin.New()
-	router.Use(gin.Logger())
-	router.LoadHTMLGlob("templates/*.tmpl.html")
-	router.Static("/static", "static")
-//
-	http.HandleFunc("/", handler)
-	router.GET("/", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "index.tmpl.html", nil)
-	})
-
-	// http.ListenAndServe(":8000", nil)
-	router.Run(":" + port)
-
-}
-
-func handler(w http.ResponseWriter, r*http.Request) {
-	io.WriteString(w, "numerical value of the expression above = ")
-	expression := r.URL.Path
+func handler(expression string) string {
 	if expression != "/favicon.ico" {
 		if len(expression) > 1 {
 			expression = expression[1:]
@@ -193,4 +169,38 @@ func handler(w http.ResponseWriter, r*http.Request) {
 			io.WriteString(w, resultString)
 		}
 	}
+}
+
+func handlerOld(w http.ResponseWriter, r*http.Request) {
+	io.WriteString(w, "numerical value of the expression above = ")
+	expression := r.URL.Path
+	if expression != "/favicon.ico" {
+		resultString := handler(expression)
+		io.WriteString(w, resultString)
+	}
+}
+
+func main() {
+	port := os.Getenv("PORT")
+
+	if port == "" {
+		log.Fatal("$PORT must be set")
+	}
+//
+	router := gin.New()
+	router.Use(gin.Logger())
+	router.LoadHTMLGlob("templates/*.tmpl.html")
+	router.Static("/static", "static")
+//
+	http.HandleFunc("/", handler)
+	router.GET("/", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "index.tmpl.html", nil)
+	})
+	router.GET("/:expression", func(c *gin.Context) {
+		expression := c.Param("expression")
+		resultString := handler(expression)
+		c.String(http.StatusOK, "numerical value for expression above = ", resultString)
+	})
+	// http.ListenAndServe(":8000", nil)
+	router.Run(":" + port)
 }
