@@ -10,19 +10,19 @@
     to the Math APIs page.
     <ul>
       <li>
-        After <tt>...herokuapp.com</tt> above you should type <tt>/json/</tt> followed by your complex expression. (ED NOTE: json is not yet available.)  If you want it in html rather than json, simply omit <tt>/json</tt> from the address.
+        After <tt>...herokuapp.com</tt> above you should type <tt>/json/</tt> followed by your complex expression using the syntax below. (ED NOTE: json is not yet available.)  If you want it in html rather than json, simply omit <tt>/json</tt> from the address.
       </li>
       <li>
-        Syntax:
+        SYNTAX:
         <ul>
           <li>
-            Spaces are allowed - but discouraged - in whichever format you use, because a <tt>%20</tt> will replace each space after you hit <tt>return</tt>, thereby making the address uglier.
+            spaces: These are allowed - but discouraged - because a <tt>%20</tt> will replace each space after you hit <tt>return</tt>, thereby making the address uglier.
           </li>
           <li>
             numbers:
             <ul>
               <li>
-                <b>real</b>: This should be an integer or decimal but not as fraction, because "<tt>/</tt>" has special meaning in a URL. Do not include a comma in any number (even one exceeding one thousand).
+                <b>real</b>: This should be an integer or decimal but not a fraction, because "<tt>/</tt>" has special meaning in a URL. Do not include any commas in a number (even if it exceeds one thousand).
               </li>
               <li>
                 <b>imaginary</b>: This should be either <tt>i</tt> or <tt>j</tt>.
@@ -30,45 +30,50 @@
             </ul>
           </li>
           <li>
-            operations:
+            binary operations:
             <ul>
               <li>
-                addition: <tt>+</tt>
+                <b>addition</b>: <tt>+</tt>
               </li>
               <li>
-                subtraction: <tt>-</tt>
+                <b>subtraction</b>: <tt>-</tt>
               </li>
               <li>
-                multiplication: Do this either by <tt>*</tt> or in an implied manner (ie with nothing separating the two numbers).
+                <b>multiplication</b>: Do this either by <tt>*</tt> or in an implied manner (ie with nothing separating the two numbers).
               </li>
               <li>
-                division: Because "<tt>/</tt>" has special meaning in a URL, the should instead be represented either by <tt>div</tt> or <tt>DIV</tt>, or even <tt>d</tt> or <tt>D</tt>.
+                <b>division</b>: Because "<tt>/</tt>" has special meaning in a URL, represent this operation either by <tt>div</tt> or <tt>DIV</tt>, or even <tt>d</tt> or <tt>D</tt>.
               </li>
               <li>
-                exponentiation: <tt>**</tt> (recommended) or <tt>^</tt> (OK).  The latter is discouraged because each instance of <tt>^</tt> will be replaced by <tt>%5E</tt> after you hit <tt>return</tt>
+                <b>exponentiation</b>: <tt>**</tt> (recommended) or <tt>^</tt> (OK).  The latter is discouraged because each instance of <tt>^</tt> will be replaced by <tt>%5E</tt> after you hit <tt>return</tt>
               </li>
             </ul>
+          </li>
+          <li>
+            unary operations (NOT YET IMPLEMENTED)
           </li>
         </ul>
       </li>
       <li>
-        Example:
+        EXAMPLE:
         <ul>
           <li>
-            expression:
+            expression: <tt>1.2(3 - i)<sup>4</sup>/(5 + 6.7i)</tt>
           </li>
           <li>
-            how to type it:
+            how to type it: <tt>1.2(3-i)**4d(5+6.7i)</tt>
           </li>
           <li>
-            result:
+            result: <tt>-8.639862641293465 - 11.462584060666767 i</tt>
           </li>
         </ul>
       </li>
     </ul>
-    creator:&nbsp;
-    <a href='https://pknipp.github.io/' target='_blank' rel='noopener noreferrer'>
-      Peter Knipp
-    </a>
+    <div>
+      creator:&nbsp;
+      <a href='https://pknipp.github.io/' target='_blank' rel='noopener noreferrer'>
+        Peter Knipp
+      </a>
+    </div>
   </p>
 </body>
