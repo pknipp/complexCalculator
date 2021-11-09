@@ -140,10 +140,11 @@ func main() {
 	router.LoadHTMLGlob("templates/*.tmpl.html")
 	router.Static("/static", "static")
 //
+	http.HandleFunc("/", handler)
 	router.GET("/", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "index.tmpl.html", nil)
 	})
-	http.HandleFunc("/", handler)
+
 	// http.ListenAndServe(":8000", nil)
 	router.Run(":" + port)
 
