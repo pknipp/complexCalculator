@@ -16,7 +16,7 @@
         SYNTAX:
         <ul>
           <li>
-            spaces: These are legal - but discouraged - because a <tt>%20</tt> will replace each space after you hit <tt>return</tt>, thereby making the address uglier.
+            spaces: These are legal - but discouraged - because <tt>%20</tt> will replace each space after you hit <tt>return</tt>, thereby making the address uglier.
           </li>
           <li>
             numbers:
@@ -28,7 +28,7 @@
                 <b>imaginary</b>: This should be a real number (See above.) which multiplies (See below.) either <tt>i</tt> or <tt>j</tt>.
               </li>
               <li>
-                <b>complex</b>: This is a simple sum/difference (See below.) of a real number and an imaginary number.
+                <b>complex</b>: This is a simple sum/difference (See below.) of a real number and an imaginary number. (See above.)
               </li>
             </ul>
           </li>
@@ -48,13 +48,13 @@
                 <b>division</b>: Because "<tt>/</tt>" has special meaning in a URL, represent this operation either by <tt>div</tt> or <tt>DIV</tt>, or even <tt>d</tt> or <tt>D</tt>.
               </li>
               <li>
-                <b>parentheses</b>: Their use is encouraged as with any calculation, especially if you are uncertain as to the order of operations ("PEMDAS" or "BEDMAS").  Use <tt>()</tt> but not <tt>[]</tt> or <tt>{}</tt>.
+                <b>parentheses</b>: Their use is encouraged as with any calculation, especially if you are uncertain as to the order of operations (ie, "PEMDAS" or "BEDMAS").  Use <tt>()</tt> but not <tt>[]</tt> or <tt>{}</tt>.
               </li>
               <li>
-          </li>
-          <b>exponentiation</b>: <tt>**</tt> (recommended) or <tt>^</tt> (discouraged).  The latter is discouraged because <tt>%5E</tt> will each replace instance of <tt>^</tt> after you hit <tt>return</tt>.
+                <b>exponentiation</b>: <tt>**</tt> (recommended) or <tt>^</tt> (discouraged).  The latter is discouraged because <tt>%5E</tt> will replace each instance of <tt>^</tt> after you hit <tt>return</tt>.
               </li>
             </ul>
+          </li>
           <li>
             unary operations: NOT YET IMPLEMENTED
           </li>
@@ -64,13 +64,13 @@
         EXAMPLE:
         <ul>
           <li>
-            expression: <tt>1.2(3 - i)<sup>4</sup>/(5 + 6.7i)</tt>
+            expression: <tt>1.2(3 - i)<sup>4</sup>/(5 + 6.7i)<sup>i</sup></tt>
           </li>
           <li>
-            how to type: <tt>1.2(3-i)**4d(5+6.7i)</tt>
+            how to type: <tt>1.2(3-i)**4d(5+6.7i)**i</tt>
           </li>
           <li>
-            result: <tt>-8.639862641293465 - 11.462584060666767 i</tt>
+            result: <tt>-293.1221578873501 + 80.76772379868241 i</tt>
           </li>
         </ul>
       </li>
