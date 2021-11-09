@@ -171,14 +171,14 @@ func handler(expression string) string {
 	}
 }
 
-func handlerOld(w http.ResponseWriter, r*http.Request) {
-	io.WriteString(w, "numerical value of the expression above = ")
-	expression := r.URL.Path
-	if expression != "/favicon.ico" {
-		resultString := handler(expression)
-		io.WriteString(w, resultString)
-	}
-}
+// func handlerOld(w http.ResponseWriter, r*http.Request) {
+	// io.WriteString(w, "numerical value of the expression above = ")
+	// expression := r.URL.Path
+	// if expression != "/favicon.ico" {
+		// resultString := handler(expression)
+		// io.WriteString(w, resultString)
+	// }
+// }
 
 func main() {
 	port := os.Getenv("PORT")
