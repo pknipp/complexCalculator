@@ -129,22 +129,23 @@ func parseExpression (expression string) (complex128) {
 }
 
 func main() {
-	port := os.Getenv("PORT")
+	// port := os.Getenv("PORT")
+// 
+	// if port == "" {
+		// log.Fatal("$PORT must be set")
+	// }
 
-	if port == "" {
-		log.Fatal("$PORT must be set")
-	}
-
-	router := gin.New()
-	router.Use(gin.Logger())
-	router.LoadHTMLGlob("templates/*.tmpl.html")
-	router.Static("/static", "static")
+	// router := gin.New()
+	// router.Use(gin.Logger())
+	// router.LoadHTMLGlob("templates/*.tmpl.html")
+	// router.Static("/static", "static")
 
 	// router.GET("/", func(c *gin.Context) {
 		// c.HTML(http.StatusOK, "index.tmpl.html", nil)
 	// })
 	http.HandleFunc("/", handler)
-	router.Run(":" + port)
+	http.ListenAndServe(":8000", nil)
+	// router.Run(":" + port)
 
 }
 
