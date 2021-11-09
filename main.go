@@ -36,6 +36,7 @@ func parseExpression (expression string) (complex128) {
 	getNumber := func(expression string) (complex128, string){
 		leadingChar := expression[0:1]
 		if leadingChar == "(" {
+			// Make a helper function which goes from here ...
 			nExpression := 0
 			nParen := 1
 			for nParen > 0 {
@@ -47,9 +48,17 @@ func parseExpression (expression string) (complex128) {
 					nParen--
 				}
 			}
+			// ... to here.
+
+			// Recursive call
 			return parseExpression(expression[1: nExpression]), expression[nExpression + 1:]
 		} else if leadingChar == "i" {
 			return complex(0, 1), expression[1:]
+		// Here insert a branch if leadingChar is a letter, signifying that it is a unary function
+		// parse thru until finding leading "("
+		// parse until finding last ")" (using same approach as above, via helper function?)
+		// evaluate argument w/recursive call to parseExpression
+		// evaluate & return the unary function, which'll involve a helper w/a switch statement
 		} else {
 			p := 1
 			var lastNum complex128
