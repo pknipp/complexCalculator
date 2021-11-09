@@ -36,6 +36,7 @@ func parseExpression (expression string) (complex128) {
 	// m1 := regexp.MustCompile(`\*\*`)
 	// expression = m1.ReplaceAllString(expression, "^")
 	expression = regexp.MustCompile(`\*\*`).ReplaceAllString(expression, "^")
+	expression = regexp.MustCompile(`d`).ReplaceAllString(expression, "/")
 	getNumber := func(expression string) (complex128, string){
 		leadingChar := expression[0:1]
 		if leadingChar == "(" {
@@ -195,10 +196,8 @@ func main() {
 	})
 	router.GET("/:expression", func(c *gin.Context) {
 		expression := c.Param("expression")
-		fmt.Println("router.GET says that expression = ", expression)
 		resultString := handler(expression)
-		fmt.Println("rounter.GET says that resultString = ", resultString)
-		c.String(http.StatusOK, "numerical value for expression above = ", resultString)
+		c.String(http.StatusOK, "numerical value for expression above = " + resultString, nil)
 	})
 	// http.ListenAndServe(":8000", nil)
 	router.Run(":" + port)
