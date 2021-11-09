@@ -1,17 +1,17 @@
 package main
 
 import (
-	// "fmt"
+	"fmt"
 	// "io"
-	"log"
+	// "log"
 	"math/cmplx"
-	"net/http"
-	"os"
+	// "net/http"
+	// "os"
 	"regexp"
 	"strconv"
 	"strings"
 
-	"github.com/gin-gonic/gin"
+	// "github.com/gin-gonic/gin"
 	_ "github.com/heroku/x/hmetrics/onload"
 )
 
@@ -32,33 +32,82 @@ func calculate(z1 complex128, op string, z2 complex128) complex128 {
 	return result
 }
 
-func parseExpression (expression string) (complex128) {
+func unary(method string, z complex128) complex128 {
+	var result complex128
+	switch method {
+	case "Abs":
+		result = complex(cmplx.Abs(z), 0.)
+	case "Phase":
+		result = complex(cmplx.Phase(z), 0.)
+	case "Acos":
+		result = cmplx.Acos(z)
+	case "Acosh":
+		result = cmplx.Acosh(z)
+	case "Asin":
+		result = cmplx.Asinh(z)
+	case "Atan":
+		result = cmplx.Atanh(z)
+	case "Conj":
+		result = cmplx.Cos(z)
+	case "Cosh":
+		result = cmplx.Cot(z)
+	case "Exp":
+		result = cmplx.Log(z)
+	case "Log10":
+		result = cmplx.Sin(z)
+	case "Sinh":
+		result = cmplx.Sqrt(z)
+	case "Tan":
+		result = cmplx.Tan(z)
+	case "Tanh":
+		result = cmplx.Tanh(z)
+	}
+	return result
+}
+
+func findSize (expression string) int {
+	nExpression := 0
+	nParen := 1
+	for nParen > 0 {
+		nExpression++
+		nextChar := expression[nExpression: nExpression + 1]
+		if nextChar == "(" {
+			nParen++
+		} else if nextChar == ")" {
+			nParen--
+		}
+	}
+	return nExpression
+}
+
+func parseExpression (expression string) complex128 {
+
+	expression = regexp.MustCompile(" ").ReplaceAllString(expression, "")
+	expression = regexp.MustCompile("j").ReplaceAllString(expression, "i")
+	expression = regexp.MustCompile(`\*\*`).ReplaceAllString(expression, "^")
+	expression = regexp.MustCompile("div").ReplaceAllString(expression, "/")
+	expression = regexp.MustCompile("DIV").ReplaceAllString(expression, "/")
+	expression = regexp.MustCompile(`[dD]`).ReplaceAllString(expression, "/")
+
 	getNumber := func(expression string) (complex128, string){
 		leadingChar := expression[0:1]
 		if leadingChar == "(" {
-			// Make a helper function which goes from here ...
-			nExpression := 0
-			nParen := 1
-			for nParen > 0 {
-				nExpression++
-				nextChar := expression[nExpression: nExpression + 1]
-				if nextChar == "(" {
-					nParen++
-				} else if nextChar == ")" {
-					nParen--
-				}
-			}
-			// ... to here.
+			nExpression := findSize(expression)
 
 			// Recursive call
 			return parseExpression(expression[1: nExpression]), expression[nExpression + 1:]
 		} else if leadingChar == "i" {
 			return complex(0, 1), expression[1:]
-		// Here insert a branch if leadingChar is a letter, signifying that it is a unary function
-		// parse thru until finding leading "("
-		// parse until finding last ")" (using same approach as above, via helper function?)
-		// evaluate argument w/recursive call to parseExpression
-		// evaluate & return the unary function, which'll involve a helper w/a switch statement
+		} else if strings.Contains("abcdefghjklmnopqrstuvwxyz", leadingChar) {
+			method := leadingChar
+			expression = expression[1:]
+			for expression[0:1] != "(" {
+				method += expression[0: 1]
+				expression = expression[1:]
+			}
+			nExpression := findSize(expression)
+			arg := parseExpression(expression[1: nExpression])
+			return unary(method, arg), expression[nExpression + 1:]
 		} else {
 			p := 1
 			var lastNum complex128
@@ -183,30 +232,29 @@ func handler(expression string) string {
 // }
 
 func main() {
-	port := os.Getenv("PORT")
-
-	if port == "" {
-		log.Fatal("$PORT must be set")
-	}
-//
-	router := gin.New()
-	router.Use(gin.Logger())
-	router.LoadHTMLGlob("index.html")
-	router.GET("/", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "index.html", nil)
-	})
-	router.GET("/:expression", func(c *gin.Context) {
-		expression := c.Param("expression")
-		expression = regexp.MustCompile(" ").ReplaceAllString(expression, "")
-		expression = regexp.MustCompile("j").ReplaceAllString(expression, "i")
-		expression = regexp.MustCompile(`\*\*`).ReplaceAllString(expression, "^")
-		expression = regexp.MustCompile("div").ReplaceAllString(expression, "/")
-		expression = regexp.MustCompile("DIV").ReplaceAllString(expression, "/")
-		expression = regexp.MustCompile(`[dD]`).ReplaceAllString(expression, "/")
-		c.String(http.StatusOK, "your expression = " + expression + "\n")
-		resultString := handler(expression)
-		c.String(http.StatusOK, "numerical value = " + resultString)
-	})
-	// http.ListenAndServe(":8000", nil)
-	router.Run(":" + port)
+	// port := os.Getenv("PORT")
+	// if port == "" {
+	// 	log.Fatal("$PORT must be set")
+	// }
+	// router := gin.New()
+	// router.Use(gin.Logger())
+	// router.LoadHTMLGlob("index.html")
+	// router.GET("/", func(c *gin.Context) {
+	// 	c.HTML(http.StatusOK, "index.html", nil)
+	// })
+	// router.GET("/:expression", func(c *gin.Context) {
+	// 	expression := c.Param("expression")
+	// 	expression = regexp.MustCompile(" ").ReplaceAllString(expression, "")
+	// 	expression = regexp.MustCompile("j").ReplaceAllString(expression, "i")
+	// 	expression = regexp.MustCompile(`\*\*`).ReplaceAllString(expression, "^")
+	// 	expression = regexp.MustCompile("div").ReplaceAllString(expression, "/")
+	// 	expression = regexp.MustCompile("DIV").ReplaceAllString(expression, "/")
+	// 	expression = regexp.MustCompile(`[dD]`).ReplaceAllString(expression, "/")
+	// 	c.String(http.StatusOK, "your expression = " + expression + "\n")
+	// 	resultString := handler(expression)
+	// 	c.String(http.StatusOK, "numerical value = " + resultString)
+	// })
+	// router.Run(":" + port)
+	expression := "1+2id(3-4id(5+6i))"
+	fmt.Println(parseExpression(expression))
 }
