@@ -182,7 +182,7 @@ func main() {
 //
 	router := gin.New()
 	router.Use(gin.Logger())
-	router.LoadHTMLGlob("index.html")(//"templates/*.tmpl.html")
+	router.LoadHTMLGlob("index.html")//"templates/*.tmpl.html")
 	// router.Static("/static", "static")
 //
 	// http.HandleFunc("/", handler)
