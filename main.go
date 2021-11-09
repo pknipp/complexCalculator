@@ -182,12 +182,15 @@ func main() {
 //
 	router := gin.New()
 	router.Use(gin.Logger())
-	router.LoadHTMLGlob("templates/*.tmpl.html")
-	router.Static("/static", "static")
+	router.LoadHTMLGlob("index.html")(//"templates/*.tmpl.html")
+	// router.Static("/static", "static")
 //
 	// http.HandleFunc("/", handler)
+	// router.GET("/", func(c *gin.Context) {
+		// c.HTML(http.StatusOK, "index.tmpl.html", nil)
+	// })
 	router.GET("/", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "index.tmpl.html", nil)
+		c.HTML(http.StatusOK, "index.html", nil)
 	})
 	router.GET("/:expression", func(c *gin.Context) {
 		expression := c.Param("expression")
