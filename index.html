@@ -2,7 +2,7 @@
   <title>complex calculator</title>
 </head>
 <body>
-  <h3><p align=center>Instructions:</p></h3>
+  <h3><p align=center>Instructions for use of complex calculator:</p></h3>
   <p align=center>
     <a href="https://pknipp.github.io/math">
       Return
@@ -16,16 +16,19 @@
         SYNTAX:
         <ul>
           <li>
-            spaces: These are allowed - but discouraged - because a <tt>%20</tt> will replace each space after you hit <tt>return</tt>, thereby making the address uglier.
+            spaces: These are legal - but discouraged - because a <tt>%20</tt> will replace each space after you hit <tt>return</tt>, thereby making the address uglier.
           </li>
           <li>
             numbers:
             <ul>
               <li>
-                <b>real</b>: This should be an integer or decimal but not a fraction, because "<tt>/</tt>" has special meaning in a URL. Do not include any commas in a number (even if it exceeds one thousand).
+                <b>real</b>: This should be an integer or decimal but not a fraction, because "<tt>/</tt>" has special meaning in a URL. Do not include any commas in the number, even if it exceeds 1000.
               </li>
               <li>
-                <b>imaginary</b>: This should be either <tt>i</tt> or <tt>j</tt>.
+                <b>imaginary</b>: This should be a real number (See above.) which multiplies (See below.) either <tt>i</tt> or <tt>j</tt>.
+              </li>
+              <li>
+                <b>complex</b>: This is a simple sum/difference (See below.) of a real number and an imaginary number.
               </li>
             </ul>
           </li>
@@ -39,18 +42,21 @@
                 <b>subtraction</b>: <tt>-</tt>
               </li>
               <li>
-                <b>multiplication</b>: Do this either by <tt>*</tt> or in an implied manner (ie with nothing separating the two numbers).
+                <b>multiplication</b>: Do this either by <tt>*</tt> or in an implied manner, ie with nothing separating the two numbers.
               </li>
               <li>
                 <b>division</b>: Because "<tt>/</tt>" has special meaning in a URL, represent this operation either by <tt>div</tt> or <tt>DIV</tt>, or even <tt>d</tt> or <tt>D</tt>.
               </li>
               <li>
-                <b>exponentiation</b>: <tt>**</tt> (recommended) or <tt>^</tt> (OK).  The latter is discouraged because each instance of <tt>^</tt> will be replaced by <tt>%5E</tt> after you hit <tt>return</tt>
+                <b>parentheses</b>: Their use is encouraged as with any calculation, especially if you are uncertain as to the order of operations ("PEMDAS" or "BEDMAS").  Use <tt>()</tt> but not <tt>[]</tt> or <tt>{}</tt>.
+              </li>
+              <li>
+          </li>
+          <b>exponentiation</b>: <tt>**</tt> (recommended) or <tt>^</tt> (discouraged).  The latter is discouraged because <tt>%5E</tt> will each replace instance of <tt>^</tt> after you hit <tt>return</tt>.
               </li>
             </ul>
-          </li>
           <li>
-            unary operations (NOT YET IMPLEMENTED)
+            unary operations: NOT YET IMPLEMENTED
           </li>
         </ul>
       </li>
@@ -61,7 +67,7 @@
             expression: <tt>1.2(3 - i)<sup>4</sup>/(5 + 6.7i)</tt>
           </li>
           <li>
-            how to type it: <tt>1.2(3-i)**4d(5+6.7i)</tt>
+            how to type: <tt>1.2(3-i)**4d(5+6.7i)</tt>
           </li>
           <li>
             result: <tt>-8.639862641293465 - 11.462584060666767 i</tt>
