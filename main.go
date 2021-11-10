@@ -7,7 +7,7 @@ import (
 	"math/cmplx"
 	"net/http"
 	"os"
-	// "regexp"
+	"regexp"
 	"strconv"
 	"strings"
 
@@ -278,19 +278,19 @@ func main() {
 	router.GET("/", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "index.tmpl.html", nil)
 	})
-	// router.GET("/:expression", func(c *gin.Context) {
-		// expression := c.Param("expression")
-		// expression = regexp.MustCompile(" ").ReplaceAllString(expression, "")
-		// expression = regexp.MustCompile("j").ReplaceAllString(expression, "i")
-		// expression = regexp.MustCompile(`\*\*`).ReplaceAllString(expression, "^")
-		// expression = regexp.MustCompile("div").ReplaceAllString(expression, "/")
-		// expression = regexp.MustCompile("DIV").ReplaceAllString(expression, "/")
-		// expression = regexp.MustCompile(`[dD]`).ReplaceAllString(expression, "/")
-		// c.String(http.StatusOK, "your expression = " + expression + "\n")
-		// var resultString string
-		// resultString = "numerical value = " + handler(expression)
-		// c.String(http.StatusOK, resultString)
-	// })
+	router.GET("/:expression", func(c *gin.Context) {
+		expression := c.Param("expression")
+		expression = regexp.MustCompile(" ").ReplaceAllString(expression, "")
+		expression = regexp.MustCompile("j").ReplaceAllString(expression, "i")
+		expression = regexp.MustCompile(`\*\*`).ReplaceAllString(expression, "^")
+		expression = regexp.MustCompile("div").ReplaceAllString(expression, "/")
+		expression = regexp.MustCompile("DIV").ReplaceAllString(expression, "/")
+		expression = regexp.MustCompile(`[dD]`).ReplaceAllString(expression, "/")
+		c.String(http.StatusOK, "your expression = " + expression + "\n")
+		var resultString string
+		resultString = "numerical value = " + handler(expression)
+		c.String(http.StatusOK, resultString)
+	})
 	router.Run(":" + port)
 	// expression := "Sqrt(3+4i)"
 	// fmt.Println(parseExpression(expression))
