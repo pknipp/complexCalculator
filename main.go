@@ -291,7 +291,7 @@ func main() {
 		var resultString string
 		resultString = "numerical value = " + handler(expression)
 		// c.String(http.StatusOK, header + "<h1>" + resultString + "</h1></body>")
-		c.HTML(http.StatusOK, header + "<h1>" + resultString + "</h1></body>")
+		c.HTML(http.StatusOK, header + "<h1>" + resultString + "</h1></body>", nil)
 	})
 	router.Run(":" + port)
 	// Use the following when testing the app in a non-server configuration.
