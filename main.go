@@ -10,7 +10,6 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
-
 	"github.com/gin-gonic/gin"
 	_ "github.com/heroku/x/hmetrics/onload"
 )
@@ -124,7 +123,6 @@ func doRegExp(expression string) string {
 func parseExpression (expression string) complex128 {
 	// Pre-processing is needed here if/when this code is tested in a non-server configuration.
 	// expression = doRegExp(expression)
-
 	getNumber := func(expression string) (complex128, string){
 		leadingChar := expression[0:1]
 		if leadingChar == "(" {
@@ -219,7 +217,7 @@ func parseExpression (expression string) complex128 {
 }
 
 func handler(expression string) string {
-	// expression = expression[1:]
+	// expression = expression[1:] This was used when I used r.URL.path
 	result := parseExpression(expression)
 	realPart := strconv.FormatFloat(real(result), 'f', -1, 64)
 	imagPart := ""
@@ -283,8 +281,6 @@ func main() {
 	resultText := "numerical value"
 	router.GET("/:expression", func(c *gin.Context) {
 		expression := doRegExp(c.Param("expression"))
-		// c.String(http.StatusOK, "your expression = " + expression + "\n")
-		// c.String(http.StatusOK, resultString)
 		c.HTML(http.StatusOK, "result.tmpl.html", gin.H{
 				"expressionText": expressionText,
 				"expressionValue": expression,
