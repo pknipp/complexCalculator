@@ -44,18 +44,30 @@ func unary(method string, z complex128) complex128 {
 	case "Acosh":
 		result = cmplx.Acosh(z)
 	case "Asin":
+		result = cmplx.Asin(z)
+	case "Asinh":
 		result = cmplx.Asinh(z)
 	case "Atan":
+		result = cmplx.Atan(z)
+	case "Atanh":
 		result = cmplx.Atanh(z)
 	case "Conj":
+		result = cmplx.Conj(z)
+	case "Cos":
 		result = cmplx.Cos(z)
 	case "Cosh":
+		result = cmplx.Cosh(z)
+	case "Cot":
 		result = cmplx.Cot(z)
 	case "Exp":
+		result = cmplx.Exp(z)
+	case "Log":
 		result = cmplx.Log(z)
 	case "Log10":
 		result = cmplx.Sin(z)
 	case "Sinh":
+		result = cmplx.Sinh(z)
+	case "Sqrt":
 		result = cmplx.Sqrt(z)
 	case "Tan":
 		result = cmplx.Tan(z)
@@ -98,7 +110,7 @@ func parseExpression (expression string) complex128 {
 			return parseExpression(expression[1: nExpression]), expression[nExpression + 1:]
 		} else if leadingChar == "i" {
 			return complex(0, 1), expression[1:]
-		} else if strings.Contains("abcdefghjklmnopqrstuvwxyz", leadingChar) {
+		} else if strings.Contains("ABCDEFGHIJKLMNOPQRSTUVWXYZ", leadingChar) {
 			method := leadingChar
 			expression = expression[1:]
 			for expression[0:1] != "(" {
@@ -255,6 +267,6 @@ func main() {
 	// 	c.String(http.StatusOK, "numerical value = " + resultString)
 	// })
 	// router.Run(":" + port)
-	expression := "1+2id(3-4id(5+6i))"
+	expression := "Sqrt(3+4i)"
 	fmt.Println(parseExpression(expression))
 }
