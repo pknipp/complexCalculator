@@ -290,9 +290,11 @@ func main() {
 		// c.String(http.StatusOK, "your expression = " + expression + "\n")
 		var resultString string
 		resultString = "numerical value = " + handler(expression)
-		c.String(http.StatusOK, header + "<h1>" + resultString + "</h1></body")
+		// c.String(http.StatusOK, header + "<h1>" + resultString + "</h1></body>")
+		c.HTML(http.StatusOK, header + "<h1>" + resultString + "</h1></body>")
 	})
 	router.Run(":" + port)
+	// Use the following when testing the app in a non-server configuration.
 	// expression := "Sqrt(3+4i)"
 	// fmt.Println(parseExpression(expression))
 }
