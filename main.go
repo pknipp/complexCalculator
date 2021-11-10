@@ -59,6 +59,12 @@ func unary(method string, z complex128) complex128 {
 		result = cmplx.Cosh(z)
 	case "Cot":
 		result = cmplx.Cot(z)
+	case "Coth":
+		result = complex(1., 0.)/cmplx.Tanh(z)
+	case "Csc":
+		result = complex(1., 0.)/cmplx.Sin(z)
+	case "Csch":
+		result = complex(1., 0.)/cmplx.Sinh(z)
 	case "Exp":
 		result = cmplx.Exp(z)
 	case "Imag":
@@ -66,9 +72,17 @@ func unary(method string, z complex128) complex128 {
 	case "Log":
 		result = cmplx.Log(z)
 	case "Log10":
-		result = cmplx.Sin(z)
+		result = cmplx.Log10(z)
+	case "Log2":
+		result = cmplx.Log(z)/complex(cmplx.Log(2, 0.))
 	case "Real":
 		result = complex(real(z), 0.)
+	case "Sec":
+		result = complex(1., 0.)/cmplx.Cos(z)
+	case "Sech":
+		result = complex(1., 0.)/cmplx.Cosh(z)
+	case "Sin":
+		result = cmplx.Sin(z)
 	case "Sinh":
 		result = cmplx.Sinh(z)
 	case "Sqrt":
@@ -78,6 +92,7 @@ func unary(method string, z complex128) complex128 {
 	case "Tanh":
 		result = cmplx.Tanh(z)
 	}
+	// Insert a default case, which should trigger an error message.
 	return result
 }
 
