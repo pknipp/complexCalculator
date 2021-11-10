@@ -291,9 +291,9 @@ func main() {
 		// c.String(http.StatusOK, "your expression = " + expression + "\n")
 		// c.String(http.StatusOK, resultString)
 		c.HTML(http.StatusOK, "result.tmpl.html", gin.H{
-				expressionText: expressionText,
+				"expressionText": expressionText,
 				"expressionValue": expression,
-				resultText: resultText,
+				"resultText": resultText,
 				"resultValue": handler(expression),
 		})
 
