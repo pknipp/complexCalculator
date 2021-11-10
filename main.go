@@ -294,7 +294,7 @@ func main() {
 	})
 	router.GET("/json/:expression", func(c *gin.Context) {
 		expression := doRegExp(c.Param("expression"))
-		resultString := '{"' + expressionText + '": ' + expressionValue + ', "' + resultText + '": ' + handler(expression) + '}'
+		resultString := "{\"" + expressionText + "\": " + expressionValue + ", \"" + resultText + "\": " + handler(expression) + "}"
 		c.String(http.StatusOK, resultString)
 	})
 	router.Run(":" + port)
