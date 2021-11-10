@@ -292,9 +292,9 @@ func main() {
 		// c.String(http.StatusOK, resultString)
 		c.HTML(http.StatusOK, "result.tmpl.html", gin.H{
 				expressionText: expressionText,
-				expressionValue: expression,
+				"expressionValue": expression,
 				resultText: resultText,
-				resultValue: handler(expression),
+				"resultValue": handler(expression),
 		})
 
 	})
