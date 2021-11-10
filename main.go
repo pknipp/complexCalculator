@@ -111,14 +111,19 @@ func findSize (expression string) int {
 	return nExpression
 }
 
+func doRegExp(expression string) string {
+	expression = regexp.MustCompile(" ").ReplaceAllString(expression, "")
+	expression = regexp.MustCompile("j").ReplaceAllString(expression, "i")
+	expression = regexp.MustCompile(`\*\*`).ReplaceAllString(expression, "^")
+	expression = regexp.MustCompile("div").ReplaceAllString(expression, "/")
+	expression = regexp.MustCompile("DIV").ReplaceAllString(expression, "/")
+	expression = regexp.MustCompile(`[dD]`).ReplaceAllString(expression, "/")
+	return expression
+}
+
 func parseExpression (expression string) complex128 {
-	// This stuff is needed here when this code is tested in a non-server configuration.
-	// expression = regexp.MustCompile(" ").ReplaceAllString(expression, "")
-	// expression = regexp.MustCompile("j").ReplaceAllString(expression, "i")
-	// expression = regexp.MustCompile(`\*\*`).ReplaceAllString(expression, "^")
-	// expression = regexp.MustCompile("div").ReplaceAllString(expression, "/")
-	// expression = regexp.MustCompile("DIV").ReplaceAllString(expression, "/")
-	// expression = regexp.MustCompile(`[dD]`).ReplaceAllString(expression, "/")
+	// Pre-processing is needed here if/when this code is tested in a non-server configuration.
+	// expression = doRegExp(expression)
 
 	getNumber := func(expression string) (complex128, string){
 		leadingChar := expression[0:1]
@@ -288,12 +293,6 @@ func main() {
 	resultText := "numerical value"
 	router.GET("/:expression", func(c *gin.Context) {
 		expression := doRegExp(c.Param("expression"))
-		// expression = regexp.MustCompile(" ").ReplaceAllString(expression, "")
-		// expression = regexp.MustCompile("j").ReplaceAllString(expression, "i")
-		// expression = regexp.MustCompile(`\*\*`).ReplaceAllString(expression, "^")
-		// expression = regexp.MustCompile("div").ReplaceAllString(expression, "/")
-		// expression = regexp.MustCompile("DIV").ReplaceAllString(expression, "/")
-		// expression = regexp.MustCompile(`[dD]`).ReplaceAllString(expression, "/")
 		// c.String(http.StatusOK, "your expression = " + expression + "\n")
 		// c.String(http.StatusOK, resultString)
 		c.HTML(http.StatusOK, "result.tmpl.html", gin.H{
