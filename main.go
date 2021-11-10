@@ -292,6 +292,11 @@ func main() {
 				"resultValue": handler(expression),
 		})
 	})
+	router.GET("/json/:expression", func(c *gin.Context) {
+		expression := doRegExp(c.Param("expression"))
+		resultString := '{"' + expressionText + '": ' + expressionValue + ', "' + resultText + '": ' + handler(expression) + '}'
+		c.String(http.StatusOK, resultString)
+	})
 	router.Run(":" + port)
 	// Use the following when testing the app in a non-server configuration.
 	// expression := "Sqrt(3+4i)"
