@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fmt"
+	// "fmt"
 	// "io"
 	"log"
 	"math/cmplx"
@@ -279,7 +279,6 @@ func main() {
 		c.HTML(http.StatusOK, "index.tmpl.html", nil)
 	})
 	router.GET("/:expression", func(c *gin.Context) {
-		// header := "<head><title>results</title></head><body>"
 		expression := c.Param("expression")
 		expression = regexp.MustCompile(" ").ReplaceAllString(expression, "")
 		expression = regexp.MustCompile("j").ReplaceAllString(expression, "i")
@@ -288,12 +287,10 @@ func main() {
 		expression = regexp.MustCompile("DIV").ReplaceAllString(expression, "/")
 		expression = regexp.MustCompile(`[dD]`).ReplaceAllString(expression, "/")
 		// c.String(http.StatusOK, "your expression = " + expression + "\n")
-		resultString := "numerical value = " + handler(expression)
-		expression = "your expression = " + expression
-		fmt.Println(expression + "\n" + resultString)
-		// c.String(http.StatusOK, header + "<h1>" + resultString + "</h1></body>")
+		// c.String(http.StatusOK, resultString)
 		c.HTML(http.StatusOK, "result.tmpl.html", gin.H{
-				"result": resultString,
+				"expression": "your expression = " + expression,
+				"result": "numerical value = " + handler(expression),
 		})
 
 	})
