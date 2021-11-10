@@ -1,7 +1,7 @@
 package main
 
 import (
-	// "fmt"
+	"fmt"
 	// "io"
 	"log"
 	"math/cmplx"
@@ -290,6 +290,7 @@ func main() {
 		// c.String(http.StatusOK, "your expression = " + expression + "\n")
 		expression = "your expression = " + expression
 		resultString := "numerical value = " + handler(expression)
+		fmt.Println(resultString)
 		// c.String(http.StatusOK, header + "<h1>" + resultString + "</h1></body>")
 		c.HTML(http.StatusOK, "result.tmpl.html", gin.H{
 				"result": resultString,
