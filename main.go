@@ -266,16 +266,6 @@ func handler(expression string) string {
 	// }
 // }
 
-func doRegExp(expression string) string {
-	expression = regexp.MustCompile(" ").ReplaceAllString(expression, "")
-	expression = regexp.MustCompile("j").ReplaceAllString(expression, "i")
-	expression = regexp.MustCompile(`\*\*`).ReplaceAllString(expression, "^")
-	expression = regexp.MustCompile("div").ReplaceAllString(expression, "/")
-	expression = regexp.MustCompile("DIV").ReplaceAllString(expression, "/")
-	expression = regexp.MustCompile(`[dD]`).ReplaceAllString(expression, "/")
-	return expression
-}
-
 func main() {
 	port := os.Getenv("PORT")
 	if port == "" {
