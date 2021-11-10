@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fmt"
+	// "fmt"
 	// "io"
 	"log"
 	"math/cmplx"
@@ -62,13 +62,13 @@ func unary(method string, z complex128) complex128 {
 	case "Exp":
 		result = cmplx.Exp(z)
 	case "Imag":
-		result = imag(z)
+		result = complex(imag(z), 0.)
 	case "Log":
 		result = cmplx.Log(z)
 	case "Log10":
 		result = cmplx.Sin(z)
 	case "Real":
-		result = real(z)
+		result = complex(real(z), 0.)
 	case "Sinh":
 		result = cmplx.Sinh(z)
 	case "Sqrt":
