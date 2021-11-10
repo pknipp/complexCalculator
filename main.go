@@ -289,7 +289,7 @@ func main() {
 		c.String(http.StatusOK, "your expression = " + expression + "\n")
 		var resultString string
 		resultString = "numerical value = " + handler(expression)
-		c.String(http.StatusOK, resultString)
+		c.String(http.StatusOK, "<h1>" + resultString + "</h1>")
 	})
 	router.Run(":" + port)
 	// expression := "Sqrt(3+4i)"
