@@ -247,7 +247,7 @@ func handler(expression string) string {
 		if imag(result) != 1 && imag(result) != -1 {
 			resultString += imagPart
 		}
-		resultString += " i"
+		resultString += "i"
 	}
 	if real(result) == 0 && imag(result) == 0 {
 		resultString = "0"
