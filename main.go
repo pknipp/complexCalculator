@@ -261,6 +261,16 @@ func handler(expression string) string {
 	// }
 // }
 
+func doRegExp(expression string) string {
+	expression = regexp.MustCompile(" ").ReplaceAllString(expression, "")
+	expression = regexp.MustCompile("j").ReplaceAllString(expression, "i")
+	expression = regexp.MustCompile(`\*\*`).ReplaceAllString(expression, "^")
+	expression = regexp.MustCompile("div").ReplaceAllString(expression, "/")
+	expression = regexp.MustCompile("DIV").ReplaceAllString(expression, "/")
+	expression = regexp.MustCompile(`[dD]`).ReplaceAllString(expression, "/")
+	return expression
+}
+
 func main() {
 	port := os.Getenv("PORT")
 	if port == "" {
@@ -269,25 +279,21 @@ func main() {
 	// router := gin.New()
 	router := gin.Default()
 	router.Use(gin.Logger())
-	// router.LoadHTMLGlob("index.html")
 	router.LoadHTMLGlob("templates/*.tmpl.html")
 	router.Static("/static", "static")
-	// router.GET("/", func(c *gin.Context) {
-		// c.HTML(http.StatusOK, "index.html", nil)
-	// })
 	router.GET("/", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "index.tmpl.html", nil)
 	})
 	expressionText := "your expression"
 	resultText := "numerical value"
 	router.GET("/:expression", func(c *gin.Context) {
-		expression := c.Param("expression")
-		expression = regexp.MustCompile(" ").ReplaceAllString(expression, "")
-		expression = regexp.MustCompile("j").ReplaceAllString(expression, "i")
-		expression = regexp.MustCompile(`\*\*`).ReplaceAllString(expression, "^")
-		expression = regexp.MustCompile("div").ReplaceAllString(expression, "/")
-		expression = regexp.MustCompile("DIV").ReplaceAllString(expression, "/")
-		expression = regexp.MustCompile(`[dD]`).ReplaceAllString(expression, "/")
+		expression := doRegExp(c.Param("expression"))
+		// expression = regexp.MustCompile(" ").ReplaceAllString(expression, "")
+		// expression = regexp.MustCompile("j").ReplaceAllString(expression, "i")
+		// expression = regexp.MustCompile(`\*\*`).ReplaceAllString(expression, "^")
+		// expression = regexp.MustCompile("div").ReplaceAllString(expression, "/")
+		// expression = regexp.MustCompile("DIV").ReplaceAllString(expression, "/")
+		// expression = regexp.MustCompile(`[dD]`).ReplaceAllString(expression, "/")
 		// c.String(http.StatusOK, "your expression = " + expression + "\n")
 		// c.String(http.StatusOK, resultString)
 		c.HTML(http.StatusOK, "result.tmpl.html", gin.H{
@@ -296,7 +302,6 @@ func main() {
 				"resultText": resultText,
 				"resultValue": handler(expression),
 		})
-
 	})
 	router.Run(":" + port)
 	// Use the following when testing the app in a non-server configuration.
