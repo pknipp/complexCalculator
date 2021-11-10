@@ -262,6 +262,15 @@ func handler(expression string) string {
 // }
 
 func main() {
+	// router.LoadHTMLGlob("templates/*.tmpl.html")
+	router.Static("/static", "static")
+
+	// router.GET("/", func(c *gin.Context) {
+		// c.HTML(http.StatusOK, "index.tmpl.html", nil)
+	// })
+
+	/////////
+
 	port := os.Getenv("PORT")
 	if port == "" {
 		log.Fatal("$PORT must be set")
@@ -282,11 +291,11 @@ func main() {
 		expression = regexp.MustCompile(`[dD]`).ReplaceAllString(expression, "/")
 		c.String(http.StatusOK, "your expression = " + expression + "\n")
 		var resultString string
-		if expression != "favicon.ico" {
-			resultString = "Favicon cannot be parsed."
-		} else {
-			resultString = "numerical value = " + handler(expression)
-		}
+		// if expression != "favicon.ico" {
+			// resultString = "Favicon cannot be parsed."
+		// } else {
+		resultString = "numerical value = " + handler(expression)
+		// }
 		c.String(http.StatusOK, resultString)
 	})
 	router.Run(":" + port)
