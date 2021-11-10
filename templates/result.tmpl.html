@@ -3,12 +3,19 @@
         <title>result</title>
     </head>
     <body>
+        <h4><p align=center>Result</p></h4>
         <p align=center>
-            <div>Result</div>
-            <ul>
-                <li>{{ .expression}}</li>
-                <li>{{ .result }}</li>
-            </ul>
+            <table border='1'>
+                <tr>
+                    <td>{{ .expressionText}}</td>
+                    <td>{{ .expressionValue}}</td>
+                </tr>
+                <tr>
+                    <td>{{ .resultText}}</td>
+                    <td>{{ .resultValue}}</td>
+                </tr>
+
+            </table>
         </p>
     </body>
 </html>

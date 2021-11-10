@@ -278,6 +278,8 @@ func main() {
 	router.GET("/", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "index.tmpl.html", nil)
 	})
+	expressionText := "your expression"
+	resultText := "numerical value"
 	router.GET("/:expression", func(c *gin.Context) {
 		expression := c.Param("expression")
 		expression = regexp.MustCompile(" ").ReplaceAllString(expression, "")
@@ -289,8 +291,10 @@ func main() {
 		// c.String(http.StatusOK, "your expression = " + expression + "\n")
 		// c.String(http.StatusOK, resultString)
 		c.HTML(http.StatusOK, "result.tmpl.html", gin.H{
-				"expression": "your expression = " + expression,
-				"result": "numerical value = " + handler(expression),
+				expressionText: expressionText,
+				expressionValue: expression,
+				resultText: resultText,
+				resultValue: handler(expression),
 		})
 
 	})
