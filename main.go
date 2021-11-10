@@ -279,6 +279,7 @@ func main() {
 		c.HTML(http.StatusOK, "index.tmpl.html", nil)
 	})
 	router.GET("/:expression", func(c *gin.Context) {
+		header := "<head><title>results</title></head><body>"
 		expression := c.Param("expression")
 		expression = regexp.MustCompile(" ").ReplaceAllString(expression, "")
 		expression = regexp.MustCompile("j").ReplaceAllString(expression, "i")
@@ -286,10 +287,10 @@ func main() {
 		expression = regexp.MustCompile("div").ReplaceAllString(expression, "/")
 		expression = regexp.MustCompile("DIV").ReplaceAllString(expression, "/")
 		expression = regexp.MustCompile(`[dD]`).ReplaceAllString(expression, "/")
-		c.String(http.StatusOK, "your expression = " + expression + "\n")
+		// c.String(http.StatusOK, "your expression = " + expression + "\n")
 		var resultString string
 		resultString = "numerical value = " + handler(expression)
-		c.String(http.StatusOK, "<h1>" + resultString + "</h1>")
+		c.String(http.StatusOK, header + "<h1>" + resultString + "</h1></body")
 	})
 	router.Run(":" + port)
 	// expression := "Sqrt(3+4i)"
