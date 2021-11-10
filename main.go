@@ -262,25 +262,20 @@ func handler(expression string) string {
 // }
 
 func main() {
-	// router.LoadHTMLGlob("templates/*.tmpl.html")
-
-
-	// router.GET("/", func(c *gin.Context) {
-		// c.HTML(http.StatusOK, "index.tmpl.html", nil)
-	// })
-
-	/////////
-
 	port := os.Getenv("PORT")
 	if port == "" {
 		log.Fatal("$PORT must be set")
 	}
 	router := gin.New()
 	router.Use(gin.Logger())
-	router.LoadHTMLGlob("index.html")
+	// router.LoadHTMLGlob("index.html")
+	router.LoadHTMLGlob("templates/*.tmpl.html")
 	router.Static("/static", "static")
+	// router.GET("/", func(c *gin.Context) {
+		// c.HTML(http.StatusOK, "index.html", nil)
+	// })
 	router.GET("/", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "index.html", nil)
+		c.HTML(http.StatusOK, "index.tmpl.html", nil)
 	})
 	router.GET("/:expression", func(c *gin.Context) {
 		expression := c.Param("expression")
