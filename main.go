@@ -74,7 +74,7 @@ func unary(method string, z complex128) complex128 {
 	case "Log10":
 		result = cmplx.Log10(z)
 	case "Log2":
-		result = cmplx.Log(z)/complex(cmplx.Log(2, 0.))
+		result = cmplx.Log(z)/cmplx.Log(complex(2., 0.))
 	case "Real":
 		result = complex(real(z), 0.)
 	case "Sec":
