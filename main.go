@@ -1,21 +1,21 @@
 package main
 
 import (
-	"fmt"
+	// "fmt"
 	// "io"
-	// "log"
+	"log"
 	"math/cmplx"
-	// "net/http"
-	// "os"
+	"net/http"
+	"os"
 	"regexp"
 	"strconv"
 	"strings"
 
-	// "github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin"
 	_ "github.com/heroku/x/hmetrics/onload"
 )
 
-func calculate(z1 complex128, op string, z2 complex128) complex128 {
+func binary(z1 complex128, op string, z2 complex128) complex128 {
 	var result complex128
 	switch op {
 	case "+":
@@ -93,13 +93,13 @@ func findSize (expression string) int {
 }
 
 func parseExpression (expression string) complex128 {
-
-	expression = regexp.MustCompile(" ").ReplaceAllString(expression, "")
-	expression = regexp.MustCompile("j").ReplaceAllString(expression, "i")
-	expression = regexp.MustCompile(`\*\*`).ReplaceAllString(expression, "^")
-	expression = regexp.MustCompile("div").ReplaceAllString(expression, "/")
-	expression = regexp.MustCompile("DIV").ReplaceAllString(expression, "/")
-	expression = regexp.MustCompile(`[dD]`).ReplaceAllString(expression, "/")
+	// This stuff is needed when this code is tested in a non-server configuration.
+	// expression = regexp.MustCompile(" ").ReplaceAllString(expression, "")
+	// expression = regexp.MustCompile("j").ReplaceAllString(expression, "i")
+	// expression = regexp.MustCompile(`\*\*`).ReplaceAllString(expression, "^")
+	// expression = regexp.MustCompile("div").ReplaceAllString(expression, "/")
+	// expression = regexp.MustCompile("DIV").ReplaceAllString(expression, "/")
+	// expression = regexp.MustCompile(`[dD]`).ReplaceAllString(expression, "/")
 
 	getNumber := func(expression string) (complex128, string){
 		leadingChar := expression[0:1]
@@ -179,7 +179,7 @@ func parseExpression (expression string) complex128 {
 				} else {
 					z1 = pairs[index - 1].num
 				}
-				result := calculate(z1, pairs[index].op, pairs[index].num)
+				result := binary(z1, pairs[index].op, pairs[index].num)
 				if index == 0 {
 					z = result
 					pairs = pairs[1:]
@@ -244,29 +244,29 @@ func handler(expression string) string {
 // }
 
 func main() {
-	// port := os.Getenv("PORT")
-	// if port == "" {
-	// 	log.Fatal("$PORT must be set")
-	// }
-	// router := gin.New()
-	// router.Use(gin.Logger())
-	// router.LoadHTMLGlob("index.html")
-	// router.GET("/", func(c *gin.Context) {
-	// 	c.HTML(http.StatusOK, "index.html", nil)
-	// })
-	// router.GET("/:expression", func(c *gin.Context) {
-	// 	expression := c.Param("expression")
-	// 	expression = regexp.MustCompile(" ").ReplaceAllString(expression, "")
-	// 	expression = regexp.MustCompile("j").ReplaceAllString(expression, "i")
-	// 	expression = regexp.MustCompile(`\*\*`).ReplaceAllString(expression, "^")
-	// 	expression = regexp.MustCompile("div").ReplaceAllString(expression, "/")
-	// 	expression = regexp.MustCompile("DIV").ReplaceAllString(expression, "/")
-	// 	expression = regexp.MustCompile(`[dD]`).ReplaceAllString(expression, "/")
-	// 	c.String(http.StatusOK, "your expression = " + expression + "\n")
-	// 	resultString := handler(expression)
-	// 	c.String(http.StatusOK, "numerical value = " + resultString)
-	// })
-	// router.Run(":" + port)
-	expression := "Sqrt(3+4i)"
-	fmt.Println(parseExpression(expression))
+	port := os.Getenv("PORT")
+	if port == "" {
+		log.Fatal("$PORT must be set")
+	}
+	router := gin.New()
+	router.Use(gin.Logger())
+	router.LoadHTMLGlob("index.html")
+	router.GET("/", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "index.html", nil)
+	})
+	router.GET("/:expression", func(c *gin.Context) {
+		expression := c.Param("expression")
+		expression = regexp.MustCompile(" ").ReplaceAllString(expression, "")
+		expression = regexp.MustCompile("j").ReplaceAllString(expression, "i")
+		expression = regexp.MustCompile(`\*\*`).ReplaceAllString(expression, "^")
+		expression = regexp.MustCompile("div").ReplaceAllString(expression, "/")
+		expression = regexp.MustCompile("DIV").ReplaceAllString(expression, "/")
+		expression = regexp.MustCompile(`[dD]`).ReplaceAllString(expression, "/")
+		c.String(http.StatusOK, "your expression = " + expression + "\n")
+		resultString := handler(expression)
+		c.String(http.StatusOK, "numerical value = " + resultString)
+	})
+	router.Run(":" + port)
+	// expression := "Sqrt(3+4i)"
+	// fmt.Println(parseExpression(expression))
 }
