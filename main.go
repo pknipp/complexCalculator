@@ -288,9 +288,9 @@ func main() {
 		expression = regexp.MustCompile("DIV").ReplaceAllString(expression, "/")
 		expression = regexp.MustCompile(`[dD]`).ReplaceAllString(expression, "/")
 		// c.String(http.StatusOK, "your expression = " + expression + "\n")
-		expression = "your expression = " + expression
 		resultString := "numerical value = " + handler(expression)
-		fmt.Println(resultString)
+		expression = "your expression = " + expression
+		fmt.Println(expression + "\n" + resultString)
 		// c.String(http.StatusOK, header + "<h1>" + resultString + "</h1></body>")
 		c.HTML(http.StatusOK, "result.tmpl.html", gin.H{
 				"result": resultString,
