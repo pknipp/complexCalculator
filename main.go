@@ -274,14 +274,16 @@ func main() {
 	})
 	router.GET("/:expression", func(c *gin.Context) {
 		expression := c.Param("expression")
-		expression = regexp.MustCompile(" ").ReplaceAllString(expression, "")
-		expression = regexp.MustCompile("j").ReplaceAllString(expression, "i")
-		expression = regexp.MustCompile(`\*\*`).ReplaceAllString(expression, "^")
-		expression = regexp.MustCompile("div").ReplaceAllString(expression, "/")
-		expression = regexp.MustCompile("DIV").ReplaceAllString(expression, "/")
-		expression = regexp.MustCompile(`[dD]`).ReplaceAllString(expression, "/")
-		c.String(http.StatusOK, "your expression = " + expression + "\n")
-		c.String(http.StatusOK, "numerical value = " + handler(expression))
+		if expression != "/favicon.ico" {
+			expression = regexp.MustCompile(" ").ReplaceAllString(expression, "")
+			expression = regexp.MustCompile("j").ReplaceAllString(expression, "i")
+			expression = regexp.MustCompile(`\*\*`).ReplaceAllString(expression, "^")
+			expression = regexp.MustCompile("div").ReplaceAllString(expression, "/")
+			expression = regexp.MustCompile("DIV").ReplaceAllString(expression, "/")
+			expression = regexp.MustCompile(`[dD]`).ReplaceAllString(expression, "/")
+			c.String(http.StatusOK, "your expression = " + expression + "\n")
+			c.String(http.StatusOK, "numerical value = " + handler(expression))
+		}
 	})
 	router.Run(":" + port)
 	// expression := "Sqrt(3+4i)"
