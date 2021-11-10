@@ -1,7 +1,7 @@
 package main
 
 import (
-	// "fmt"
+	"fmt"
 	// "io"
 	"log"
 	"math/cmplx"
@@ -93,6 +93,7 @@ func findSize (expression string) int {
 }
 
 func parseExpression (expression string) complex128 {
+	fmt.Println("l96 says that expression = ", expression)
 	// This stuff is needed when this code is tested in a non-server configuration.
 	// expression = regexp.MustCompile(" ").ReplaceAllString(expression, "")
 	// expression = regexp.MustCompile("j").ReplaceAllString(expression, "i")
@@ -104,13 +105,16 @@ func parseExpression (expression string) complex128 {
 	getNumber := func(expression string) (complex128, string){
 		leadingChar := expression[0:1]
 		if leadingChar == "(" {
+			fmt.Println("l108 says that expression = ", expression)
 			nExpression := findSize(expression)
 
 			// Recursive call
 			return parseExpression(expression[1: nExpression]), expression[nExpression + 1:]
 		} else if leadingChar == "i" {
+			fmt.Println("l114 says that expression = ", expression)
 			return complex(0, 1), expression[1:]
 		} else if strings.Contains("ABCDEFGHIJKLMNOPQRSTUVWXYZ", leadingChar) {
+			fmt.Println("l117 says that expression = ", expression)
 			method := leadingChar
 			expression = expression[1:]
 			for expression[0:1] != "(" {
@@ -121,6 +125,7 @@ func parseExpression (expression string) complex128 {
 			arg := parseExpression(expression[1: nExpression])
 			return unary(method, arg), expression[nExpression + 1:]
 		} else {
+			fmt.Println("l128 says that expression = ", expression)
 			p := 1
 			var lastNum complex128
 			for len(expression) >= p {
@@ -263,6 +268,7 @@ func main() {
 		expression = regexp.MustCompile("DIV").ReplaceAllString(expression, "/")
 		expression = regexp.MustCompile(`[dD]`).ReplaceAllString(expression, "/")
 		c.String(http.StatusOK, "your expression = " + expression + "\n")
+		fmt.Println(expression)
 		resultString := handler(expression)
 		c.String(http.StatusOK, "numerical value = " + resultString)
 	})
