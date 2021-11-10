@@ -292,7 +292,6 @@ func main() {
 		resultString := "numerical value = " + handler(expression)
 		// c.String(http.StatusOK, header + "<h1>" + resultString + "</h1></body>")
 		c.HTML(http.StatusOK, "result.tmpl.html", gin.H{
-				"expression": expression,
 				"result": resultString,
 		})
 
