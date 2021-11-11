@@ -14,8 +14,6 @@ import (
 	_ "github.com/heroku/x/hmetrics/onload"
 )
 
-zero = complex(0., 0.)
-one = complex(1., 0.)
 
 func binary(z1 complex128, op string, z2 complex128) complex128 {
 	var result complex128
@@ -35,6 +33,7 @@ func binary(z1 complex128, op string, z2 complex128) complex128 {
 }
 
 func unary(method string, z complex128) complex128 {
+	one := complex(1., 0.)
 	var result complex128
 	switch method {
 	case "Abs":
