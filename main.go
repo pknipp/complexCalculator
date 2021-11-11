@@ -14,6 +14,9 @@ import (
 	_ "github.com/heroku/x/hmetrics/onload"
 )
 
+zero = complex(0., 0.)
+one = complex(1., 0.)
+
 func binary(z1 complex128, op string, z2 complex128) complex128 {
 	var result complex128
 	switch op {
@@ -36,12 +39,23 @@ func unary(method string, z complex128) complex128 {
 	switch method {
 	case "Abs":
 		result = complex(cmplx.Abs(z), 0.)
-	case "Phase":
-		result = complex(cmplx.Phase(z), 0.)
+
 	case "Acos":
 		result = cmplx.Acos(z)
 	case "Acosh":
 		result = cmplx.Acosh(z)
+	case "Acot":
+		result = cmplx.Atan(one/z)
+	case "Acoth":
+		result = cmplx.Atanh(one/z)
+	case "Acsc":
+		result = cmplx.Asin(one/z)
+	case "Acsch":
+		result = cmplx.Asinh(one/z)
+	case "Asec":
+		result = cmplx.Acos(one/z)
+	case "Asech":
+		result = cmplx.Acosh(one/z)
 	case "Asin":
 		result = cmplx.Asin(z)
 	case "Asinh":
@@ -59,11 +73,11 @@ func unary(method string, z complex128) complex128 {
 	case "Cot":
 		result = cmplx.Cot(z)
 	case "Coth":
-		result = complex(1., 0.)/cmplx.Tanh(z)
+		result = one/cmplx.Tanh(z)
 	case "Csc":
-		result = complex(1., 0.)/cmplx.Sin(z)
+		result = one/cmplx.Sin(z)
 	case "Csch":
-		result = complex(1., 0.)/cmplx.Sinh(z)
+		result = one/cmplx.Sinh(z)
 	case "Exp":
 		result = cmplx.Exp(z)
 	case "Imag":
@@ -74,12 +88,14 @@ func unary(method string, z complex128) complex128 {
 		result = cmplx.Log10(z)
 	case "Log2":
 		result = cmplx.Log(z)/cmplx.Log(complex(2., 0.))
+	case "Phase":
+		result = complex(cmplx.Phase(z), 0.)
 	case "Real":
 		result = complex(real(z), 0.)
 	case "Sec":
-		result = complex(1., 0.)/cmplx.Cos(z)
+		result = one/cmplx.Cos(z)
 	case "Sech":
-		result = complex(1., 0.)/cmplx.Cosh(z)
+		result = one/cmplx.Cosh(z)
 	case "Sin":
 		result = cmplx.Sin(z)
 	case "Sinh":
