@@ -1,4 +1,6 @@
 figure out how to import "math" into handler, which enable DRY-ing of some parts of code.
 figure out how to separate functions into separate files
-error handling
-    -determine locations of singularities of z1 ^ z2
+use all caps for some constants, such as ...
+    one, zero, ops, pole
+check that Phase(complex(0, 0)) is actually undefined
+DRY up unary by making a helper function that checks that arg is nonzero.
