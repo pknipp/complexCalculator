@@ -1,22 +1,24 @@
 package main
 
 import (
-	// "fmt"
+	"fmt"
 	// "io"
-	"log"
+	// "log"
 	"math/cmplx"
-	"net/http"
-	"os"
+	// "net/http"
+	// "os"
 	"regexp"
 	"strconv"
 	"strings"
-	"github.com/gin-gonic/gin"
-	_ "github.com/heroku/x/hmetrics/onload"
+	// "github.com/gin-gonic/gin"
+	// _ "github.com/heroku/x/hmetrics/onload"
 )
 
 
-func binary(z1 complex128, op string, z2 complex128) complex128 {
+func binary(z1 complex128, op string, z2 complex128) (bool, complex128) {
 	var result complex128
+	zero := complex(0., 0.)
+	success := true
 	switch op {
 	case "+":
 		result = z1 + z2
@@ -25,36 +27,71 @@ func binary(z1 complex128, op string, z2 complex128) complex128 {
 	case "*":
 		result = z1 * z2
 	case "/":
-		result = z1 / z2
+		if z2 == zero {
+			success = false
+		} else {
+			result = z1 / z2
+		}
 	case "^":
-		result = cmplx.Pow(z1, z2)
+		if z1 == zero && real(z2) < 0 {
+			success = false
+		} else {
+			result = cmplx.Pow(z1, z2)
+		}
+	default:
+		success = false
 	}
-	return result
+	return success, result
 }
 
-func unary(method string, z complex128) complex128 {
+func unary(method string, z complex128) (bool, complex128) {
 	one := complex(1., 0.)
+	zero :=complex(0., 0.)
 	var result complex128
+	success := true
 	switch method {
 	case "Abs":
 		result = complex(cmplx.Abs(z), 0.)
-
 	case "Acos":
 		result = cmplx.Acos(z)
 	case "Acosh":
 		result = cmplx.Acosh(z)
 	case "Acot":
-		result = cmplx.Atan(one/z)
+		if z == zero {
+			success = false
+		} else {
+			result = cmplx.Atan(one/z)
+		}
 	case "Acoth":
-		result = cmplx.Atanh(one/z)
+		if z == zero {
+			success = false
+	 	} else {
+			result = cmplx.Atanh(one/z)
+		 }
 	case "Acsc":
-		result = cmplx.Asin(one/z)
+		if z == zero {
+			success = false
+		} else {
+			result = cmplx.Asin(one/z)
+		}
 	case "Acsch":
-		result = cmplx.Asinh(one/z)
+		if z == zero {
+			success = false
+		} else {
+			result = cmplx.Asinh(one/z)
+		}
 	case "Asec":
-		result = cmplx.Acos(one/z)
+		if z == zero {
+			success = false
+		} else {
+			result = cmplx.Acos(one/z)
+		}
 	case "Asech":
-		result = cmplx.Acosh(one/z)
+		if z == zero {
+			success = false
+		} else {
+			result = cmplx.Acosh(one/z)
+		}
 	case "Asin":
 		result = cmplx.Asin(z)
 	case "Asinh":
@@ -70,31 +107,75 @@ func unary(method string, z complex128) complex128 {
 	case "Cosh":
 		result = cmplx.Cosh(z)
 	case "Cot":
-		result = cmplx.Cot(z)
+		if z == zero {
+			success = false
+		} else {
+			result = cmplx.Cot(z)
+		}
 	case "Coth":
-		result = one/cmplx.Tanh(z)
+		if z == zero {
+			success = false
+		} else {
+			result = one/cmplx.Tanh(z)
+		}
 	case "Csc":
-		result = one/cmplx.Sin(z)
+		den := cmplx.Sin(z)
+		if den == zero {
+			success = false
+		} else {
+			result = one/den
+		}
 	case "Csch":
-		result = one/cmplx.Sinh(z)
+		den := cmplx.Sinh(z)
+		if den == zero {
+			success = false
+		} else {
+			result = one/den
+		}
 	case "Exp":
 		result = cmplx.Exp(z)
 	case "Imag":
 		result = complex(imag(z), 0.)
 	case "Log":
-		result = cmplx.Log(z)
+		if z == zero {
+			success = false
+		} else {
+			result = cmplx.Log(z)
+		}
 	case "Log10":
-		result = cmplx.Log10(z)
+		if z == zero {
+			success = false
+		} else {
+			result = cmplx.Log10(z)
+		}
 	case "Log2":
-		result = cmplx.Log(z)/cmplx.Log(complex(2., 0.))
+		if z == zero {
+			success = false
+		} else {
+			result = cmplx.Log(z)/cmplx.Log(complex(2., 0.))
+		}
 	case "Phase":
-		result = complex(cmplx.Phase(z), 0.)
+		if z == zero {
+			success = false
+		} else {
+			result = complex(cmplx.Phase(z), 0.)
+		}
 	case "Real":
 		result = complex(real(z), 0.)
 	case "Sec":
-		result = one/cmplx.Cos(z)
+		den := cmplx.Cos(z)
+		if den == zero {
+			success = false
+		} else {
+			result = one/den
+		}
 	case "Sech":
-		result = one/cmplx.Cosh(z)
+		den := cmplx.Cosh(z)
+		if den == zero {
+			success = false
+		} else {
+			result = one/cmplx.Cosh(z)
+		}
 	case "Sin":
 		result = cmplx.Sin(z)
 	case "Sinh":
@@ -105,26 +186,31 @@ func unary(method string, z complex128) complex128 {
 		result = cmplx.Tan(z)
 	case "Tanh":
 		result = cmplx.Tanh(z)
+	default:
+		success = false
 	}
-	// Insert a default case, which should trigger an error message.
-	return result
+	return success, result
 }
 
-func findSize (expression string) int {
-	nExpression := 0
+func findSize (expression string) (bool, int) {
 	nParen := 1
-	for nParen > 0 {
-		nExpression++
-		nextChar := expression[nExpression: nExpression + 1]
-		if nextChar == "(" {
+	for nExpression := 0; nExpression < len(expression); nExpression++ {
+		char := expression[nExpression: nExpression + 1]
+		if char == "(" {
 			nParen++
-		} else if nextChar == ")" {
+		} else if char == ")" {
 			nParen--
 		}
+		// Closing parenthesis has been found.
+		if nParen == 0 {
+			return true, nExpression
+		}
 	}
-	return nExpression
+	// No closing parenthesis was found.
+	return false, 0
 }
 
+// I don't think that this function'll ever fail.
 func doRegExp(expression string) string {
 	expression = regexp.MustCompile(" ").ReplaceAllString(expression, "")
 	expression = regexp.MustCompile("j").ReplaceAllString(expression, "i")
@@ -135,30 +221,62 @@ func doRegExp(expression string) string {
 	return expression
 }
 
-func parseExpression (expression string) complex128 {
-	// Pre-processing is needed here if/when this code is tested in a non-server configuration.
-	// expression = doRegExp(expression)
-	getNumber := func(expression string) (complex128, string){
+func parseExpression (expression string) (bool, complex128) {
+	success := true
+	// Following pre-processing line is needed if/when this code is tested in a non-server configuration.
+	expression = doRegExp(expression)
+	getNumber := func(expression string) (bool, complex128, string){
+		success := true
+		var val complex128
+		if len(expression) == 0 {
+			return false, val, expression
+		}
 		leadingChar := expression[0:1]
 		if leadingChar == "(" {
-			nExpression := findSize(expression)
-			// Recursive call
-			return parseExpression(expression[1: nExpression]), expression[nExpression + 1:]
+			var nExpression int
+			// remove leading parenthesis
+			expression = expression[1:]
+			success, nExpression = findSize(expression)
+			if success {
+				// recursive call to evalulate what is in parentheses
+				success, val = parseExpression(expression[0:nExpression])
+				// From expression remove trailing parenthesis and stuff preceding it.
+				expression = expression[nExpression + 1:]
+			}
+			return success, val, expression
 		} else if leadingChar == "i" {
-			return complex(0, 1), expression[1:]
+			return success, complex(0, 1), expression[1:]
+			// A capital letter triggers that we are looking at start of a unary function name.
 		} else if strings.Contains("ABCDEFGHIJKLMNOPQRSTUVWXYZ", leadingChar) {
 			method := leadingChar
 			expression = expression[1:]
+			if len(expression) == 0 {
+				return false, 0, expression
+			}
+			// We seek an open paren, which signifies start of argument (& end of method name)
 			for expression[0:1] != "(" {
 				method += expression[0: 1]
 				expression = expression[1:]
+				if len(expression) == 0 {
+					return false, 0, expression
+				}
 			}
-			nExpression := findSize(expression)
-			arg := parseExpression(expression[1: nExpression])
-			return unary(method, arg), expression[nExpression + 1:]
+			var nExpression int
+			// Remove leading parenthesis
+			expression = expression[1:]
+			success, nExpression = findSize(expression)
+			var arg complex128
+			if success {
+				success, arg = parseExpression(expression[0: nExpression])
+			}
+			if success {
+				success, val = unary(method, arg)
+			}
+			return success, val, expression[nExpression + 1:]
 		} else {
+			// The following'll change only if strconv.ParseFloat ever returns no error, below.
+			success = false
 			p := 1
-			var lastNum complex128
 			for len(expression) >= p {
 				z := expression[0:p]
 				// If implied multiplication is detected ...
@@ -171,23 +289,28 @@ func parseExpression (expression string) complex128 {
 					if err != nil {
 						break
 					}
-					lastNum = complex(num, 0.)
+					val = complex(num, 0.)
+					success = true
 				}
 				p++
 			}
-			return lastNum, expression[p - 1:]
+			return success, val, expression[p - 1:]
 		}
 	}
 	type opNum struct {
 		op string
 		num complex128
 	}
-
-	if expression[0:1] == "+" {
-		expression = expression[1:]
+	if len(expression) > 0 {
+		if expression[0:1] == "+" {
+			expression = expression[1:]
+		}
 	}
 	var z complex128
-	z, expression = getNumber(expression)
+	success, z, expression = getNumber(expression)
+	if !success {
+		return false, z
+	}
 	precedence := map[string]int{"+": 0, "-": 0, "*": 1, "/": 1, "^": 2}
 	ops := "+-*/^"
 	pairs := []opNum{}
@@ -199,9 +322,11 @@ func parseExpression (expression string) complex128 {
 		} else {
 			op = "*"
 		}
-		num, expression = getNumber(expression)
-		pair := opNum{op, num}
-		pairs = append(pairs, pair)
+		success, num, expression = getNumber(expression)
+		if success {
+			// pair := opNum{op, num}
+			pairs = append(pairs, opNum{op, num})
+		}
 	}
 	for len(pairs) > 0 {
 		index := 0
@@ -215,7 +340,9 @@ func parseExpression (expression string) complex128 {
 				} else {
 					z1 = pairs[index - 1].num
 				}
-				result := binary(z1, pairs[index].op, pairs[index].num)
+				// var success bool
+				var result complex128
+				success, result = binary(z1, pairs[index].op, pairs[index].num)
 				if index == 0 {
 					z = result
 					pairs = pairs[1:]
@@ -228,44 +355,51 @@ func parseExpression (expression string) complex128 {
 			}
 		}
 	}
-	return z
+	return success, z
 }
 
 func handler(expression string) string {
 	// expression = expression[1:] This was used when I used r.URL.path
-	result := parseExpression(expression)
-	realPart := strconv.FormatFloat(real(result), 'f', -1, 64)
-	imagPart := ""
-	// DRY the following with math.abs ASA I figure out how to import it.
-	if imag(result) > 0 {
-		imagPart = strconv.FormatFloat(imag(result), 'f', -1, 64)
-	} else {
-		imagPart = strconv.FormatFloat(imag(-result), 'f', -1, 64)
-	}
-	resultString := ""
-	if real(result) != 0 {
-		resultString += realPart
-	}
-	if real(result) != 0 && imag(result) != 0 {
-		// DRY the following after finding some sort of "sign" function
+	var success bool
+	var result complex128
+	var resultString string
+	success, result = parseExpression(expression)
+	if success {
+		realPart := strconv.FormatFloat(real(result), 'f', -1, 64)
+		imagPart := ""
+		// DRY the following with math.abs ASA I figure out how to import it.
 		if imag(result) > 0 {
-			resultString += " + "
+			imagPart = strconv.FormatFloat(imag(result), 'f', -1, 64)
 		} else {
-			resultString += " - "
+			imagPart = strconv.FormatFloat(imag(-result), 'f', -1, 64)
 		}
-	}
-	if imag(result) != 0 {
-		if real(result) == 0 && imag(result) < 0 {
-			resultString += " - "
+		resultString = ""
+		if real(result) != 0 {
+			resultString += realPart
 		}
-		// DRY the following after figuring out how to import math.abs
-		if imag(result) != 1 && imag(result) != -1 {
-			resultString += imagPart
+		if real(result) != 0 && imag(result) != 0 {
+			// DRY the following after finding some sort of "sign" function
+			if imag(result) > 0 {
+				resultString += " + "
+			} else {
+				resultString += " - "
+			}
 		}
-		resultString += "i"
-	}
-	if real(result) == 0 && imag(result) == 0 {
-		resultString = "0"
+		if imag(result) != 0 {
+			if real(result) == 0 && imag(result) < 0 {
+				resultString += " - "
+			}
+			// DRY the following after figuring out how to import math.abs
+			if imag(result) != 1 && imag(result) != -1 {
+				resultString += imagPart
+			}
+			resultString += "i"
+		}
+		if real(result) == 0 && imag(result) == 0 {
+			resultString = "0"
+		}
+	} else {
+		resultString = "There was a failure somewhere."
 	}
 	return resultString
 }
@@ -280,36 +414,36 @@ func handler(expression string) string {
 // }
 
 func main() {
-	port := os.Getenv("PORT")
-	if port == "" {
-		log.Fatal("$PORT must be set")
-	}
+	// port := os.Getenv("PORT")
+	// if port == "" {
+		// log.Fatal("$PORT must be set")
+	// }
 	// router := gin.New()
-	router := gin.Default()
-	router.Use(gin.Logger())
-	router.LoadHTMLGlob("templates/*.tmpl.html")
-	router.Static("/static", "static")
-	router.GET("/", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "index.tmpl.html", nil)
-	})
-	expressionText := "your expression"
-	resultText := "numerical value"
-	router.GET("/:expression", func(c *gin.Context) {
-		expression := doRegExp(c.Param("expression"))
-		c.HTML(http.StatusOK, "result.tmpl.html", gin.H{
-				"expressionText": expressionText,
-				"expressionValue": expression,
-				"resultText": resultText,
-				"resultValue": handler(expression),
-		})
-	})
-	router.GET("/json/:expression", func(c *gin.Context) {
-		expression := doRegExp(c.Param("expression"))
-		resultString := "{\"" + expressionText + "\": " + expression + ", \"" + resultText + "\": " + handler(expression) + "}"
-		c.String(http.StatusOK, resultString)
-	})
-	router.Run(":" + port)
+	// router := gin.Default()
+	// router.Use(gin.Logger())
+	// router.LoadHTMLGlob("templates/*.tmpl.html")
+	// router.Static("/static", "static")
+	// router.GET("/", func(c *gin.Context) {
+		// c.HTML(http.StatusOK, "index.tmpl.html", nil)
+	// })
+	// expressionText := "your expression"
+	// resultText := "numerical value"
+	// router.GET("/:expression", func(c *gin.Context) {
+		// expression := doRegExp(c.Param("expression"))
+		// c.HTML(http.StatusOK, "result.tmpl.html", gin.H{
+				// "expressionText": expressionText,
+				// "expressionValue": expression,
+				// "resultText": resultText,
+				// "resultValue": handler(expression),
+		// })
+	// })
+	// router.GET("/json/:expression", func(c *gin.Context) {
+		// expression := doRegExp(c.Param("expression"))
+		// resultString := "{\"" + expressionText + "\": " + expression + ", \"" + resultText + "\": " + handler(expression) + "}"
+		// c.String(http.StatusOK, resultString)
+	// })
+	// router.Run(":" + port)
 	// Use the following when testing the app in a non-server configuration.
-	// expression := "Sqrt(3+4i)"
-	// fmt.Println(parseExpression(expression))
+	expression := "Sin()"
+	fmt.Println(parseExpression(expression))
 }
