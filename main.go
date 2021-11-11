@@ -208,7 +208,7 @@ func findSize (expression string) (string, int) {
 			return "", nExpression
 		}
 	}
-	return "No closing parenthesis was found for the following string: " + expression, 0
+	return "No closing parenthesis was found for the following string: '" + expression + "'.", 0
 }
 
 // I don't think that this function'll ever fail.
@@ -284,7 +284,7 @@ func parseExpression (expression string) (string, complex128) {
 			return message, val, expression[nExpression + 1:]
 		} else {
 			// The following'll change only if strconv.ParseFloat ever returns no error, below.
-			message = "The string " + expression + " does not evaluate to a number."
+			message = "The string '" + expression + "' does not evaluate to a number."
 			p := 1
 			for len(expression) >= p {
 				z := expression[0:p]
@@ -320,7 +320,7 @@ func parseExpression (expression string) (string, complex128) {
 	if len(message) != 0 {
 		return message, ZERO
 	}
-	precedence := map[string]int{"+": 0, "-": 0, "*": 1, "/": 1, "^": 2}
+	PRECEDENCE := map[string]int{"+": 0, "-": 0, "*": 1, "/": 1, "^": 2}
 	OPS := "+-*/^"
 	pairs := []opNum{}
 	var num complex128
@@ -340,7 +340,7 @@ func parseExpression (expression string) (string, complex128) {
 	for len(pairs) > 0 {
 		index := 0
 		for len(pairs) > index {
-			if index < len(pairs) - 1 && precedence[pairs[index].op] < precedence[pairs[index + 1].op] {
+			if index < len(pairs) - 1 && PRECEDENCE[pairs[index].op] < PRECEDENCE[pairs[index + 1].op] {
 				index++
 			} else {
 				var z1 complex128
@@ -373,7 +373,7 @@ func handler(expression string) string {
 	var resultString string
 	message, result = parseExpression(expression)
 	if len(message) != 0 {
-		return message
+		return "ERROR: " + message
 	}
 	realPart := strconv.FormatFloat(real(result), 'f', -1, 64)
 	imagPart := ""
