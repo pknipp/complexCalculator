@@ -19,7 +19,7 @@ func binary(z1 complex128, op string, z2 complex128) (string, complex128) {
 	var result complex128
 	ZERO := complex(0., 0.)
 	message := ""
-	pole := "A divide-by-zero singularity exists in this expression."
+	pole := "A singularity exists in this expression."
 	switch op {
 	case "+":
 		result = z1 + z2
@@ -34,7 +34,7 @@ func binary(z1 complex128, op string, z2 complex128) (string, complex128) {
 			result = z1 / z2
 		}
 	case "^":
-		if z1 == ZERO && real(z2) < 0 {
+		if z1 == ZERO && real(z2) <= 0 {
 			message = pole
 		} else {
 			result = cmplx.Pow(z1, z2)
@@ -157,11 +157,7 @@ func unary(method string, z complex128) (string, complex128) {
 			result = cmplx.Log(z)/cmplx.Log(complex(2., 0.))
 		}
 	case "Phase":
-		// if z == zero {
-			// message = pole
-		// } else {
-			result = complex(cmplx.Phase(z), 0.)
-		// }
+		result = complex(cmplx.Phase(z), 0.)
 	case "Real":
 		result = complex(real(z), 0.)
 	case "Sec":

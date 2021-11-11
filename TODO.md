@@ -2,5 +2,4 @@ figure out how to import "math" into handler, which enable DRY-ing of some parts
 figure out how to separate functions into separate files
 use all caps for some constants, such as ...
     one, zero, pole
-check that Phase(complex(0, 0)) is actually undefined
 DRY up unary by making a helper function that checks that arg is nonzero.
