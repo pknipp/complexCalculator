@@ -157,11 +157,11 @@ func unary(method string, z complex128) (string, complex128) {
 			result = cmplx.Log(z)/cmplx.Log(complex(2., 0.))
 		}
 	case "Phase":
-		if z == zero {
-			message = pole
-		} else {
+		// if z == zero {
+			// message = pole
+		// } else {
 			result = complex(cmplx.Phase(z), 0.)
-		}
+		// }
 	case "Real":
 		result = complex(real(z), 0.)
 	case "Sec":
