@@ -161,19 +161,9 @@ func unary(method string, z complex128) (string, complex128) {
 	case "Real":
 		result = complex(real(z), 0.)
 	case "Sec":
-		den := cmplx.Cos(z)
-		if den == zero {
-			message = pole
-		} else {
-			result = one/den
-		}
+		result = one/cmplx.Cos(z)
 	case "Sech":
-		den := cmplx.Cosh(z)
-		if den == zero {
-			message = pole
-		} else {
-			result = one/cmplx.Cosh(z)
-		}
+		result = one/cmplx.Cosh(z)
 	case "Sin":
 		result = cmplx.Sin(z)
 	case "Sinh":
