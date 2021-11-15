@@ -16,10 +16,10 @@ import (
 	// "pknipp/parseExpression"
 )
 
-func isLetter(char string) bool {
-	if char[0] >= 'A'[0] && char[0] <= 'Z'[0] {
+func isLetter(rune string) bool {
+	if rune >= 'A' && rune <= 'Z' {
 		return true
-	} else if char[0] >= 'a'[0] && char[0] <= 'z'[0] {
+	} else if rune >= 'a' && rune <= 'z' {
 		return true
 	}
 	return false
@@ -250,7 +250,7 @@ func parseExpression (expression string) (string, complex128) {
 			return message, complex(0, 1), expression[1:]
 			// A letter triggers that we are looking at start of a unary function name.
 		// } else if (leadingChar[0] > 96 && leadingChar[0] < 123) || (leadingChar[0] > 64 && leadingChar[0] < 91) {
-		} else if isLetter(leadingChar) {
+		} else if isLetter(leadingChar[0]) {
 			// If leadingChar is lower-case, convert it to uppercase to facilitate comparison w/our list of unaries.
 			if (leadingChar[0] > 96) {
 				leadingChar = string(leadingChar[0] - 32)
