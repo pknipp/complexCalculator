@@ -1,9 +1,9 @@
 package main
 
 import (
-	// "fmt"
+	"fmt"
 	// "io"
-	"log"
+	// "log"
 	"math/cmplx"
 	"net/http"
 	"os"
@@ -79,7 +79,7 @@ func unary(method string, z complex128) (string, complex128) {
 			message = pole
 	 	} else {
 			result = cmplx.Atanh(one/z)
-		 }
+		}
 	case "Acsc":
 		if z == zero {
 			message = pole
@@ -219,7 +219,7 @@ func doRegExp(expression string) string {
 }
 
 func parseExpression (expression string) (string, complex128) {
-	ZERO := complex(0., 0.)
+	ZERO, TEN := complex(0., 0.), complex(10., 0.)
 	message := ""
 	// Following pre-processing line is needed if/when this code is tested in a non-server configuration.
 	expression = doRegExp(expression)
@@ -255,33 +255,51 @@ func parseExpression (expression string) (string, complex128) {
 			if (leadingChar[0] > 96) {
 				leadingChar = string(leadingChar[0] - 32)
 			}
-			method := leadingChar
 			expression = expression[1:]
 			if len(expression) == 0 {
-				return "This unary function invocation ends prematurely.", 0, expression
+				return "This unary function invocation ends prematurely.", ZERO, ""
 			}
-			// We seek an open paren, which signifies start of argument (& end of method name)
-			for expression[0:1] != "(" {
-				method += expression[0: 1]
-				expression = expression[1:]
-				if len(expression) == 0 {
-					return "The argument of this unary function seems nonexistent.", 0, expression
+			// The next characters represent the invocation of a unary function.
+			if isLetter(expression[0]) {
+				method := leadingChar
+				// We seek an open paren, which signifies start of argument (& end of method name)
+				for expression[0:1] != "(" {
+					method += expression[0: 1]
+					expression = expression[1:]
+					if len(expression) == 0 {
+						return "The argument of this unary function seems nonexistent.", ZERO, ""
+					}
 				}
+				var nExpression int
+				// Remove leading parenthesis
+				expression = expression[1:]
+				message, nExpression = findSize(expression)
+				var arg complex128
+				if len(message) != 0 {
+					return message, ZERO, ""
+				}
+				message, arg = parseExpression(expression[0: nExpression])
+				if len(message) != 0 {
+					return message, ZERO, ""
+				}
+				message, val = unary(method, arg)
+				return message, val, expression[nExpression + 1:]
+				// If not a unary, the user is representing scientific notation
+			} else {
+				message = "Your scientific notation (the start of " + expression + ") is improperly formatted."
+				p := 1
+				for len(expression) >= p {
+					z := expression[0:p]
+					num, err := strconv.ParseInt(z, 64)
+					if err != nil {
+						break
+					}
+					val = cmplx.pow(TEN, num)
+					message = ""
+					p++
+				}
+				return message, val, expression[p - 1:]
 			}
-			var nExpression int
-			// Remove leading parenthesis
-			expression = expression[1:]
-			message, nExpression = findSize(expression)
-			var arg complex128
-			if len(message) != 0 {
-				return message, ZERO, ""
-			}
-			message, arg = parseExpression(expression[0: nExpression])
-			if len(message) != 0 {
-				return message, ZERO, ""
-			}
-			message, val = unary(method, arg)
-			return message, val, expression[nExpression + 1:]
 		} else {
 			// The following'll change only if strconv.ParseFloat ever returns no error, below.
 			message = "The string '" + expression + "' does not evaluate to a number."
@@ -418,42 +436,42 @@ func handler(expression string) string {
 // }
 
 func main() {
-	port := os.Getenv("PORT")
-	if port == "" {
-		log.Fatal("$PORT must be set")
-	}
+	// port := os.Getenv("PORT")
+	// if port == "" {
+		// log.Fatal("$PORT must be set")
+	// }
 	// I opted not to use this version of router, for technical reasons.
 	// router := gin.New()
-	router := gin.Default()
-	router.Use(gin.Logger())
-	router.LoadHTMLGlob("templates/*.tmpl.html")
-	router.Static("/static", "static")
-	router.GET("/", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "index.tmpl.html", nil)
-	})
-	expressionText := "your expression"
-	resultText := "numerical value"
-	router.GET("/:expression", func(c *gin.Context) {
-		expression := doRegExp(c.Param("expression"))
-		c.HTML(http.StatusOK, "result.tmpl.html", gin.H{
-				"expressionText": expressionText,
-				"expressionValue": expression,
-				"resultText": resultText,
-				"resultValue": handler(expression),
-		})
-	})
-	router.GET("/json/:expression", func(c *gin.Context) {
-		expression := doRegExp(c.Param("expression"))
-		resultString := "{\"" + expressionText + "\": " + expression + ", \"" + resultText + "\": " + handler(expression) + "}"
-		c.String(http.StatusOK, resultString)
-	})
-	router.Run(":" + port)
+	// router := gin.Default()
+	// router.Use(gin.Logger())
+	// router.LoadHTMLGlob("templates/*.tmpl.html")
+	// router.Static("/static", "static")
+	// router.GET("/", func(c *gin.Context) {
+		// c.HTML(http.StatusOK, "index.tmpl.html", nil)
+	// })
+	// expressionText := "your expression"
+	// resultText := "numerical value"
+	// router.GET("/:expression", func(c *gin.Context) {
+		// expression := doRegExp(c.Param("expression"))
+		// c.HTML(http.StatusOK, "result.tmpl.html", gin.H{
+				// "expressionText": expressionText,
+				// "expressionValue": expression,
+				// "resultText": resultText,
+				// "resultValue": handler(expression),
+		// })
+	// })
+	// router.GET("/json/:expression", func(c *gin.Context) {
+		// expression := doRegExp(c.Param("expression"))
+		// resultString := "{\"" + expressionText + "\": " + expression + ", \"" + resultText + "\": " + handler(expression) + "}"
+		// c.String(http.StatusOK, resultString)
+	// })
+	// router.Run(":" + port)
 	// Use the following when testing the app in a non-server configuration.
-	// expression := "cos(2+3i)" //"(1+2id(3-4id(5+6i)))**i"
-	// message, resultString := parseExpression(expression)
-	// if len(message) == 0 {
-		// fmt.Println(resultString)
-	// } else {
-		// fmt.Println(message)
-	// }
+	expression := "cos(2+3i)" //"(1+2id(3-4id(5+6i)))**i"
+	message, resultString := parseExpression(expression)
+	if len(message) == 0 {
+		fmt.Println(resultString)
+	} else {
+		fmt.Println(message)
+	}
 }
