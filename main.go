@@ -48,8 +48,7 @@ func binary(z1 complex128, op string, z2 complex128) (string, complex128) {
 }
 
 func unary(method string, z complex128) (string, complex128) {
-	one := complex(1., 0.)
-	zero :=complex(0., 0.)
+	zero, one := complex(0., 0.), complex(1., 0.)
 	var result complex128
 	message := ""
 	pole := "A singularity exists in this expression."
@@ -216,9 +215,8 @@ func parseExpression (expression string) (string, complex128) {
 	// Following pre-processing line is needed if/when this code is tested in a non-server configuration.
 	expression = doRegExp(expression)
 	getNumber := func(expression string) (string, complex128, string){
-		// ZERO := complex(0., 0.)
-		message := ""
 		var val complex128
+		message := ""
 		if len(expression) == 0 {
 			return "Your expression truncates prematurely.", val, expression
 		}
@@ -241,8 +239,12 @@ func parseExpression (expression string) (string, complex128) {
 			return message, val, expression
 		} else if leadingChar == "i" {
 			return message, complex(0, 1), expression[1:]
-			// A capital letter triggers that we are looking at start of a unary function name.
-		} else if strings.Contains("ABCDEFGHIJKLMNOPQRSTUVWXYZ", leadingChar) {
+			// A letter triggers that we are looking at start of a unary function name.
+		} else if (leadingChar[0] > 96 && leadingChar[0] < 123) || (leadingChar[0] > 64 && leadingChar[0] < 91) {
+			// If leadingChar is lower-case, convert it to uppercase to facilitate comparison w/our list of unaries.
+			if (leadingChar[0] > 96) {
+				leadingChar = string(leadingChar[0] - 32)
+			}
 			method := leadingChar
 			expression = expression[1:]
 			if len(expression) == 0 {
@@ -303,7 +305,7 @@ func parseExpression (expression string) (string, complex128) {
 			expression = expression[1:]
 		}
 	}
-	var z complex128
+	var z, num complex128
 	message, z, expression = getNumber(expression)
 	if len(message) != 0 {
 		return message, ZERO
@@ -311,7 +313,6 @@ func parseExpression (expression string) (string, complex128) {
 	PRECEDENCE := map[string]int{"+": 0, "-": 0, "*": 1, "/": 1, "^": 2}
 	OPS := "+-*/^"
 	pairs := []opNum{}
-	var num complex128
 	for len(expression) > 0 {
 		op := expression[0:1]
 		if strings.Contains(OPS, op) {
@@ -331,13 +332,12 @@ func parseExpression (expression string) (string, complex128) {
 			if index < len(pairs) - 1 && PRECEDENCE[pairs[index].op] < PRECEDENCE[pairs[index + 1].op] {
 				index++
 			} else {
-				var z1 complex128
+				var z1, result complex128
 				if index == 0 {
 					z1 = z
 				} else {
 					z1 = pairs[index - 1].num
 				}
-				var result complex128
 				message, result = binary(z1, pairs[index].op, pairs[index].num)
 				if index == 0 {
 					z = result
@@ -356,9 +356,8 @@ func parseExpression (expression string) (string, complex128) {
 
 func handler(expression string) string {
 	// expression = expression[1:] This was used when I used r.URL.path
-	var message string
+	var message, resultString string
 	var result complex128
-	var resultString string
 	message, result = parseExpression(expression)
 	if len(message) != 0 {
 		return "ERROR: " + message
@@ -440,7 +439,7 @@ func main() {
 	// })
 	// router.Run(":" + port)
 	// Use the following when testing the app in a non-server configuration.
-	expression := "(1+2id(3-4id(5+6i)))**i"
+	expression := "cos(2+3i)" //"(1+2id(3-4id(5+6i)))**i"
 	message, resultString := parseExpression(expression)
 	if len(message) == 0 {
 		fmt.Println(resultString)
