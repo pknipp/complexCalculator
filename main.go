@@ -16,6 +16,14 @@ import (
 	// "pknipp/parseExpression"
 )
 
+func isLetter(char string) bool {
+	if char[0] >= 'A'[0] && char[0] <= 'Z'[0] {
+		return true
+	} else if char[0] >= 'a'[0] && char[0] <= 'z'[0] {
+		return true
+	}
+	return false
+}
 
 func binary(z1 complex128, op string, z2 complex128) (string, complex128) {
 	var result complex128
@@ -52,6 +60,7 @@ func unary(method string, z complex128) (string, complex128) {
 	var result complex128
 	message := ""
 	pole := "A singularity exists in this expression."
+	scinotation := "You are not implementing scientific notation properly."
 	switch method {
 	case "Abs":
 		result = complex(cmplx.Abs(z), 0.)
@@ -240,7 +249,8 @@ func parseExpression (expression string) (string, complex128) {
 		} else if leadingChar == "i" {
 			return message, complex(0, 1), expression[1:]
 			// A letter triggers that we are looking at start of a unary function name.
-		} else if (leadingChar[0] > 96 && leadingChar[0] < 123) || (leadingChar[0] > 64 && leadingChar[0] < 91) {
+		// } else if (leadingChar[0] > 96 && leadingChar[0] < 123) || (leadingChar[0] > 64 && leadingChar[0] < 91) {
+		} else if isLetter(leadingChar) {
 			// If leadingChar is lower-case, convert it to uppercase to facilitate comparison w/our list of unaries.
 			if (leadingChar[0] > 96) {
 				leadingChar = string(leadingChar[0] - 32)
