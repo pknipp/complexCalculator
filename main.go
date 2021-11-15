@@ -16,10 +16,10 @@ import (
 	// "pknipp/parseExpression"
 )
 
-func isLetter(rune rune) bool {
-	if rune >= 'A' && rune <= 'Z' {
+func isLetter(char byte) bool {
+	if char >= 'A' && char <= 'Z' {
 		return true
-	} else if rune >= 'a' && rune <= 'z' {
+	} else if char >= 'a' && char <= 'z' {
 		return true
 	}
 	return false
