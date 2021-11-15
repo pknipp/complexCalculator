@@ -16,7 +16,7 @@ import (
 	// "pknipp/parseExpression"
 )
 
-func isLetter(rune string) bool {
+func isLetter(rune rune) bool {
 	if rune >= 'A' && rune <= 'Z' {
 		return true
 	} else if rune >= 'a' && rune <= 'z' {
