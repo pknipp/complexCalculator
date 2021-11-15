@@ -1,16 +1,16 @@
 package main
 
 import (
-	"fmt"
+	// "fmt"
 	// "io"
-	// "log"
+	"log"
 	"math/cmplx"
-	// "net/http"
-	// "os"
+	"net/http"
+	"os"
 	"regexp"
 	"strconv"
 	"strings"
-	// "github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin"
 	// _ "github.com/heroku/x/hmetrics/onload"
 
 	// "pknipp/parseExpression"
@@ -408,42 +408,42 @@ func handler(expression string) string {
 // }
 
 func main() {
-	// port := os.Getenv("PORT")
-	// if port == "" {
-		// log.Fatal("$PORT must be set")
-	// }
+	port := os.Getenv("PORT")
+	if port == "" {
+		log.Fatal("$PORT must be set")
+	}
 	// I opted not to use this version of router, for technical reasons.
 	// router := gin.New()
-	// router := gin.Default()
-	// router.Use(gin.Logger())
-	// router.LoadHTMLGlob("templates/*.tmpl.html")
-	// router.Static("/static", "static")
-	// router.GET("/", func(c *gin.Context) {
-		// c.HTML(http.StatusOK, "index.tmpl.html", nil)
-	// })
-	// expressionText := "your expression"
-	// resultText := "numerical value"
-	// router.GET("/:expression", func(c *gin.Context) {
-		// expression := doRegExp(c.Param("expression"))
-		// c.HTML(http.StatusOK, "result.tmpl.html", gin.H{
-				// "expressionText": expressionText,
-				// "expressionValue": expression,
-				// "resultText": resultText,
-				// "resultValue": handler(expression),
-		// })
-	// })
-	// router.GET("/json/:expression", func(c *gin.Context) {
-		// expression := doRegExp(c.Param("expression"))
-		// resultString := "{\"" + expressionText + "\": " + expression + ", \"" + resultText + "\": " + handler(expression) + "}"
-		// c.String(http.StatusOK, resultString)
-	// })
-	// router.Run(":" + port)
+	router := gin.Default()
+	router.Use(gin.Logger())
+	router.LoadHTMLGlob("templates/*.tmpl.html")
+	router.Static("/static", "static")
+	router.GET("/", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "index.tmpl.html", nil)
+	})
+	expressionText := "your expression"
+	resultText := "numerical value"
+	router.GET("/:expression", func(c *gin.Context) {
+		expression := doRegExp(c.Param("expression"))
+		c.HTML(http.StatusOK, "result.tmpl.html", gin.H{
+				"expressionText": expressionText,
+				"expressionValue": expression,
+				"resultText": resultText,
+				"resultValue": handler(expression),
+		})
+	})
+	router.GET("/json/:expression", func(c *gin.Context) {
+		expression := doRegExp(c.Param("expression"))
+		resultString := "{\"" + expressionText + "\": " + expression + ", \"" + resultText + "\": " + handler(expression) + "}"
+		c.String(http.StatusOK, resultString)
+	})
+	router.Run(":" + port)
 	// Use the following when testing the app in a non-server configuration.
-	expression := "cos(2+3i)" //"(1+2id(3-4id(5+6i)))**i"
-	message, resultString := parseExpression(expression)
-	if len(message) == 0 {
-		fmt.Println(resultString)
-	} else {
-		fmt.Println(message)
-	}
+	// expression := "cos(2+3i)" //"(1+2id(3-4id(5+6i)))**i"
+	// message, resultString := parseExpression(expression)
+	// if len(message) == 0 {
+		// fmt.Println(resultString)
+	// } else {
+		// fmt.Println(message)
+	// }
 }
