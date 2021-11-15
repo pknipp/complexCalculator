@@ -60,7 +60,7 @@ func unary(method string, z complex128) (string, complex128) {
 	var result complex128
 	message := ""
 	pole := "A singularity exists in this expression."
-	scinotation := "You are not implementing scientific notation properly."
+	// scinotation := "You are not implementing scientific notation properly."
 	switch method {
 	case "Abs":
 		result = complex(cmplx.Abs(z), 0.)
