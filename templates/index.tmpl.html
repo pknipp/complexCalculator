@@ -2,7 +2,7 @@
   <title>complex calculator</title>
 </head>
 <body>
-  <h3><p align=center>Instructions for use of complex calculator:</p></h3>
+  <h3><p align=center>Instructions for use of <a href="https://en.wikipedia.org/wiki/Complex_number">complex</a> calculator:</p></h3>
   <p align=center>
     <a href="https://pknipp.github.io/math">
       Return
@@ -10,7 +10,7 @@
     to the Math APIs page.
     <ul>
       <li>
-        After <tt>...herokuapp.com</tt> above you should type <tt>/json/</tt> followed by your complex expression using the syntax below.  If you want the response to be html rather than json, simply omit <tt>/json</tt> from the address.
+        After <tt>...herokuapp.com</tt> above you should type <tt>/json/</tt> followed by your <a href="https://en.wikipedia.org/wiki/Complex_number">complex</a> expression using the syntax below.  If you want the response to be html rather than json, simply omit <tt>/json</tt> from the address.
       </li>
       <li>
         SYNTAX:
@@ -22,13 +22,13 @@
             numbers:
             <ul>
               <li>
-                <b>real</b>: This should be an integer or decimal but not a fraction, because "<tt>/</tt>" has special meaning in a URL. Do not include any commas in the number, even if it exceeds 1000. You may represent large or small numbers with <a href="https://en.wikipedia.org/wiki/Scientific_notation#E_notation">E notation</a>, using either <tt>E</tt> or <tt>e</tt>, but neither <tt>D</tt> not <tt>d</tt>, owing to the fact that the latter characters are used to represent division, as described below.
+                <a href="https://en.wikipedia.org/wiki/Real_number"><b>real</b></a>: This should be an integer or decimal but not a fraction, because "<tt>/</tt>" has special meaning in a URL. Do not include any commas in the number, even if it exceeds 1000. You may represent large or small numbers with <a href="https://en.wikipedia.org/wiki/Scientific_notation#E_notation">E notation</a>, using either <tt>E</tt> or <tt>e</tt>, but neither <tt>D</tt> not <tt>d</tt>, owing to the fact that the latter characters are used to represent division, as described below.
               </li>
               <li>
-                <b>imaginary</b>: This should be a real number (See above.) which multiplies (See below.) either <tt>i</tt> or <tt>j</tt>.
+                <a href="https://en.wikipedia.org/wiki/Imaginary_number"><b>imaginary</b></a>: This should be a real number (See above.) which multiplies (See below.) either <tt>i</tt> or <tt>j</tt>.
               </li>
               <li>
-                <b>complex</b>: This is a simple sum/difference (See below.) of a real number and an imaginary number. (See above.)
+                <a href="https://en.wikipedia.org/wiki/Complex_number"><b>complex</b></a>: This is a simple sum/difference (See below.) of a real number and an imaginary number. (See above.)
               </li>
             </ul>
           </li>
@@ -36,10 +36,10 @@
             binary operations:
             <ul>
               <li>
-                <b>P</b>arentheses: Their use is encouraged as with any calculation, especially if you are uncertain as to the order of operations (ie, "PEMDAS" or "BEDMAS").  Use <tt>()</tt> but neither <tt>[]</tt> nor <tt>{}</tt>.
+                <b>P</b>arentheses: Their use is encouraged as with any calculation, especially if you are uncertain as to the <a href="https://en.wikipedia.org/wiki/Order_of_operations">order of operations</a> (ie, "PEMDAS" or "BEDMAS").  Use <tt>()</tt> but neither <tt>[]</tt> nor <tt>{}</tt>.
               </li>
               <li>
-                <b>E</b>xponentiation: <tt>**</tt> (recommended) or <tt>^</tt> (discouraged).  The latter is discouraged because <tt>%5E</tt> will replace each instance of <tt>^</tt> after you hit <tt>return</tt>, thereby making the address uglier.
+                <b>E</b>xponentiation: <tt>**</tt> (recommended) or <tt>^</tt>.  The latter is discouraged because <tt>%5E</tt> will replace each instance of <tt>^</tt> after you hit <tt>return</tt>, thereby making the address uglier.  This app evaluates <a href="https://en.wikipedia.org/wiki/Order_of_operations#Serial_exponentiation">serial exponentiation</a> (for which there is no standard) from left-to-right.  For instance, it evaluates <tt>1 ** 2 ** 3</tt> as 8, not 1.
               </li>
               <li>
                 <b>M</b>ultiplication: Do this either by <tt>*</tt> or in an implied manner, ie with nothing separating the two numbers.
@@ -59,22 +59,23 @@
             unary operations: Below are listed the available functions, most of which are explained <a href="https://pkg.go.dev/math/cmplx">here</a>.
             <ul>
               <li>
-                basic: Real, Imag, Abs, Phase, Conj, Sqrt
+                basic: Real, Imag, Abs, Phase, <a href="https://en.wikipedia.org/wiki/Complex_number#Conjugate">Conj</a>, Sqrt
               </li>
               <li>
-                exponential and inverses: Exp, Log, Log2, Log10
+                <a href="https://en.wikipedia.org/wiki/Exponential_function">exponential</a> and it <a href="https://en.wikipedia.org/wiki/Logarithm">inverses</a>: Exp, Log, Log2, Log10
               </li>
               <li>
-                circular trigonometric: Cos, Sin, Tan, Sec, Csc, Cot
+                <a href="https://en.wikipedia.org/wiki/Trigonometric_functions">circular trigonometric</a>  : Cos, Sin, Tan, Sec, Csc, Cot
               </li>
               <li>
-                inverses of circular trig: Acos, Asin, Atan, Asec, Acsc, Acot
+                <a href="https://en.wikipedia.org/wiki/Inverse_trigonometric_functions"
+                >inverses</a> of circular trig: Acos, Asin, Atan, Asec, Acsc, Acot
               </li>
               <li>
-                hyperbolic trigonometric: Cosh, Sinh, Tanh, Sech, Csch, Coth
+                <a href="https://en.wikipedia.org/wiki/Hyperbolic_functions">hyperbolic trigonometric</a>: Cosh, Sinh, Tanh, Sech, Csch, Coth
               </li>
               <li>
-                inverses of hyperbolic trig: Acosh, Asinh, Atanh, Asech, Acsch, Acoth
+                <a href="https://en.wikipedia.org/wiki/Inverse_hyperbolic_functions">inverses</a> of hyperbolic trig: Acosh, Asinh, Atanh, Asech, Acsch, Acoth
               </li>
             </ul>
           </li>
