@@ -131,15 +131,13 @@ func unary(method string, z complex128) (string, complex128) {
 			result = one/cmplx.Tanh(z)
 		}
 	case "Csc":
-		den := cmplx.Sin(z)
-		if den == zero {
+		if den := cmplx.Sin(z); den == zero {
 			message = pole
 		} else {
 			result = one/den
 		}
 	case "Csch":
-		den := cmplx.Sinh(z)
-		if den == zero {
+		if den := cmplx.Sinh(z); den == zero {
 			message = pole
 		} else {
 			result = one/den
@@ -193,8 +191,7 @@ func unary(method string, z complex128) (string, complex128) {
 func findSize (expression string) (string, int) {
 	nParen := 1
 	for nExpression := 0; nExpression < len(expression); nExpression++ {
-		char := expression[nExpression: nExpression + 1]
-		if char == "(" {
+		if char := expression[nExpression: nExpression + 1]; char == "(" {
 			nParen++
 		} else if char == ")" {
 			nParen--
@@ -289,14 +286,13 @@ func parseExpression (expression string) (string, complex128) {
 				message = "Your scientific notation (the start of " + leadingChar + expression + ") is improperly formatted."
 				p := 1
 				for len(expression) >= p {
-					z := expression[0:p]
-					if z != "+" && z != "-" {
-						num, err := strconv.ParseInt(z, 10, 64)
-						if err != nil {
+					if z := expression[0:p]; z != "+" && z != "-" {
+						if num, err := strconv.ParseInt(z, 10, 64); err != nil {
 							break
+						} else {
+							val = cmplx.Pow(TEN, complex(float64(num), 0.))
+							message = ""
 						}
-						val = cmplx.Pow(TEN, complex(float64(num), 0.))
-						message = ""
 					}
 					p++
 				}
@@ -307,19 +303,18 @@ func parseExpression (expression string) (string, complex128) {
 			message = "The string '" + expression + "' does not evaluate to a number."
 			p := 1
 			for len(expression) >= p {
-				z := expression[0:p]
 				// If implied multiplication is detected ...
-				if expression[p - 1: p] == "(" {
+				if  z := expression[0:p]; expression[p - 1: p] == "(" {
 					// ... insert a "*" symbol.
 					expression = expression[0:p - 1] + "*" + expression[p - 1:]
 					break
 				} else if !(z == "." || z == "-" || z == "-.") {
-					num, err := strconv.ParseFloat(z, 64)
-					if err != nil {
+					if num, err := strconv.ParseFloat(z, 64); err != nil {
 						break
+					} else {
+						val = complex(num, 0.)
+						message = ""
 					}
-					val = complex(num, 0.)
-					message = ""
 				}
 				p++
 			}
@@ -351,11 +346,11 @@ func parseExpression (expression string) (string, complex128) {
 		} else {
 			op = "*"
 		}
-		message, num, expression = getNumber(expression)
-		if len(message) != 0 {
+		if message, num, expression = getNumber(expression); len(message) != 0 {
 			return message, ZERO
+		} else {
+			pairs = append(pairs, opNum{op, num})
 		}
-		pairs = append(pairs, opNum{op, num})
 	}
 	for len(pairs) > 0 {
 		index := 0
