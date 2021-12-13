@@ -455,7 +455,7 @@ func main() {
 		c.String(http.StatusOK, resultString)
 	})
 	router.NoRoute(func(c *gin.Context) {
-	    c.JSON(404, gin.H{"code": "PAGE_NOT_FOUND", "message": "CC page not found"})
+	    c.JSON(404, gin.H{"code": "PAGE_NOT_FOUND", "message": "Remember that you must type 'd' or 'D' instead of '/' in order to divide one number by another."})
 	})
 	router.Run(":" + port)
 	// Use the following when testing the app in a non-server configuration.
