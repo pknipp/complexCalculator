@@ -454,6 +454,9 @@ func main() {
 		resultString := "{\"" + expressionText + "\": " + expression + ", \"" + resultText + "\": " + handler(expression) + "}"
 		c.String(http.StatusOK, resultString)
 	})
+	router.GET("/:expression", func(c *gin.Context) {
+		c.String(http.StatusOK, c.Param("expression"))
+	})
 	router.Run(":" + port)
 	// Use the following when testing the app in a non-server configuration.
 	// expression := "(1+2id(3-4id(5+6i)))**i"
