@@ -5,6 +5,7 @@ import (
 	// "io"
 	"log"
 	"math/cmplx"
+	"math"
 	"net/http"
 	"os"
 	"regexp"
@@ -12,8 +13,6 @@ import (
 	"strings"
 	"github.com/gin-gonic/gin"
 	_ "github.com/heroku/x/hmetrics/onload"
-
-	// "pknipp/parseExpression"
 )
 
 func isLetter(char byte) bool {
@@ -25,165 +24,139 @@ func isLetter(char byte) bool {
 	return false
 }
 
+func isNonzero(z complex128, m *string) bool {
+	isZero := z == complex(0., 0.);
+	if isZero {
+		*m = "A singularity exists in this expression."
+	}
+	return !isZero
+}
+
 func binary(z1 complex128, op string, z2 complex128) (string, complex128) {
 	var result complex128
-	ZERO := complex(0., 0.)
-	message := ""
-	pole := "A singularity exists in this expression."
+	var message string
 	switch op {
-	case "+":
-		result = z1 + z2
-	case "-":
-		result = z1 - z2
-	case "*":
-		result = z1 * z2
-	case "/":
-		if z2 == ZERO {
-			message = pole
-		} else {
-			result = z1 / z2
-		}
-	case "^":
-		if z1 == ZERO && real(z2) <= 0 {
-			message = pole
-		} else {
-			result = cmplx.Pow(z1, z2)
-		}
-	default:
-		message = pole
+		case "+":
+			result = z1 + z2
+		case "-":
+			result = z1 - z2
+		case "*":
+			result = z1 * z2
+		case "/":
+			if isNonzero(z2, &message) {
+				result = z1 / z2
+			}
+		case "^":
+			if real(z2) > 0 || isNonzero(z1, &message) {
+				result = cmplx.Pow(z1, z2)
+			}
+		default:
+			message = "The operation " + op + " is unknown." // I think that this'll never be hit, because of my use of OPS.
 	}
 	return message, result
 }
 
-func unary(method string, z complex128) (string, complex128) {
-	zero, one := complex(0., 0.), complex(1., 0.)
+func unary (method string, z complex128) (string, complex128) {
+	ONE := complex(1., 0.)
 	var result complex128
-	message := ""
-	pole := "A singularity exists in this expression."
-	// scinotation := "You are not implementing scientific notation properly."
+	var message string
 	switch method {
-	case "Abs":
-		result = complex(cmplx.Abs(z), 0.)
-	case "Acos":
-		result = cmplx.Acos(z)
-	case "Acosh":
-		result = cmplx.Acosh(z)
-	case "Acot":
-		if z == zero {
-			message = pole
-		} else {
-			result = cmplx.Atan(one/z)
-		}
-	case "Acoth":
-		if z == zero {
-			message = pole
-	 	} else {
-			result = cmplx.Atanh(one/z)
-		}
-	case "Acsc":
-		if z == zero {
-			message = pole
-		} else {
-			result = cmplx.Asin(one/z)
-		}
-	case "Acsch":
-		if z == zero {
-			message = pole
-		} else {
-			result = cmplx.Asinh(one/z)
-		}
-	case "Asec":
-		if z == zero {
-			message = pole
-		} else {
-			result = cmplx.Acos(one/z)
-		}
-	case "Asech":
-		if z == zero {
-			message = pole
-		} else {
-			result = cmplx.Acosh(one/z)
-		}
-	case "Asin":
-		result = cmplx.Asin(z)
-	case "Asinh":
-		result = cmplx.Asinh(z)
-	case "Atan":
-		result = cmplx.Atan(z)
-	case "Atanh":
-		result = cmplx.Atanh(z)
-	case "Conj":
-		result = cmplx.Conj(z)
-	case "Cos":
-		result = cmplx.Cos(z)
-	case "Cosh":
-		result = cmplx.Cosh(z)
-	case "Cot":
-		if z == zero {
-			message = pole
-		} else {
-			result = cmplx.Cot(z)
-		}
-	case "Coth":
-		if z == zero {
-			message = pole
-		} else {
-			result = one/cmplx.Tanh(z)
-		}
-	case "Csc":
-		if den := cmplx.Sin(z); den == zero {
-			message = pole
-		} else {
-			result = one/den
-		}
-	case "Csch":
-		if den := cmplx.Sinh(z); den == zero {
-			message = pole
-		} else {
-			result = one/den
-		}
-	case "Exp":
-		result = cmplx.Exp(z)
-	case "Imag":
-		result = complex(imag(z), 0.)
-	case "Log":
-		if z == zero {
-			message = pole
-		} else {
-			result = cmplx.Log(z)
-		}
-	case "Log10":
-		if z == zero {
-			message = pole
-		} else {
-			result = cmplx.Log10(z)
-		}
-	case "Log2":
-		if z == zero {
-			message = pole
-		} else {
-			result = cmplx.Log(z)/cmplx.Log(complex(2., 0.))
-		}
-	case "Phase":
-		result = complex(cmplx.Phase(z), 0.)
-	case "Real":
-		result = complex(real(z), 0.)
-	case "Sec":
-		result = one/cmplx.Cos(z)
-	case "Sech":
-		result = one/cmplx.Cosh(z)
-	case "Sin":
-		result = cmplx.Sin(z)
-	case "Sinh":
-		result = cmplx.Sinh(z)
-	case "Sqrt":
-		result = cmplx.Sqrt(z)
-	case "Tan":
-		result = cmplx.Tan(z)
-	case "Tanh":
-		result = cmplx.Tanh(z)
-	default:
-		message = "There exists no such function by this name.  Check spelling and capitalization."
+		case "Abs":
+			result = complex(cmplx.Abs(z), 0.)
+		case "Acos":
+			result = cmplx.Acos(z)
+		case "Acosh":
+			result = cmplx.Acosh(z)
+		case "Acot":
+			if isNonzero(z, &message) {
+				result = cmplx.Atan(ONE/z)
+			}
+		case "Acoth":
+			if isNonzero(z, &message) {
+				result = cmplx.Atanh(ONE/z)
+			}
+		case "Acsc":
+			if isNonzero(z, &message) {
+				result = cmplx.Asin(ONE/z)
+			}
+		case "Acsch":
+			if isNonzero(z, &message) {
+				result = cmplx.Asinh(ONE/z)
+			}
+		case "Asec":
+			if isNonzero(z, &message) {
+				result = cmplx.Acos(ONE/z)
+			}
+		case "Asech":
+			if isNonzero(z, &message) {
+				result = cmplx.Acosh(ONE/z)
+			}
+		case "Asin":
+			result = cmplx.Asin(z)
+		case "Asinh":
+			result = cmplx.Asinh(z)
+		case "Atan":
+			result = cmplx.Atan(z)
+		case "Atanh":
+			result = cmplx.Atanh(z)
+		case "Conj":
+			result = cmplx.Conj(z)
+		case "Cos":
+			result = cmplx.Cos(z)
+		case "Cosh":
+			result = cmplx.Cosh(z)
+		case "Cot":
+			if isNonzero(z, &message) {
+				result = ONE/cmplx.Tan(z)
+			}
+		case "Coth":
+			if isNonzero(z, &message) {
+				result = ONE/cmplx.Tanh(z)
+			}
+		case "Csc":
+			if isNonzero(z, &message) {
+				result = ONE/cmplx.Sin(z)
+			}
+		case "Csch":
+			if isNonzero(z, &message) {
+				result = ONE/cmplx.Sinh(z)
+			}
+		case "Exp":
+			result = cmplx.Exp(z)
+		case "Imag":
+			result = complex(imag(z), 0.)
+		case "Log":
+			if isNonzero(z, &message) {
+				result = cmplx.Log(z)
+			}
+		case "Log10":
+			if isNonzero(z, &message) {
+				result = cmplx.Log10(z)
+			}
+		case "Log2":
+			if isNonzero(z, &message) {
+				result = cmplx.Log(z)/cmplx.Log(complex(2., 0.))
+			}
+		case "Phase":
+			result = complex(cmplx.Phase(z), 0.)
+		case "Real":
+			result = complex(real(z), 0.)
+		case "Sec":
+			result = ONE/cmplx.Cos(z)
+		case "Sech":
+			result = ONE/cmplx.Cosh(z)
+		case "Sin":
+			result = cmplx.Sin(z)
+		case "Sinh":
+			result = cmplx.Sinh(z)
+		case "Sqrt":
+			result = cmplx.Sqrt(z)
+		case "Tan":
+			result = cmplx.Tan(z)
+		case "Tanh":
+			result = cmplx.Tanh(z)
+		default:
+			message = "There exists no such function by this name.  Check spelling and capitalization."
 	}
 	return message, result
 }
@@ -246,7 +219,6 @@ func parseExpression (expression string) (string, complex128) {
 		} else if leadingChar == "i" {
 			return message, complex(0, 1), expression[1:]
 			// A letter triggers that we are looking at start of a unary function name.
-		// } else if (leadingChar[0] > 96 && leadingChar[0] < 123) || (leadingChar[0] > 64 && leadingChar[0] < 91) {
 		} else if isLetter(leadingChar[0]) {
 			// If leadingChar is lower-case, convert it to uppercase to facilitate comparison w/our list of unaries.
 			if (leadingChar[0] > 96) {
@@ -382,38 +354,28 @@ func parseExpression (expression string) (string, complex128) {
 
 func handler(expression string) string {
 	// expression = expression[1:] This was used when I used r.URL.path
-	var message, resultString string
-	var result complex128
-	message, result = parseExpression(expression)
+	message, result := parseExpression(expression)
 	if len(message) != 0 {
 		return "ERROR: " + message
 	}
 	realPart := strconv.FormatFloat(real(result), 'f', -1, 64)
-	imagPart := ""
-	// DRY the following with math.abs ASA I figure out how to import it.
-	if imag(result) > 0 {
-		imagPart = strconv.FormatFloat(imag(result), 'f', -1, 64)
-	} else {
-		imagPart = strconv.FormatFloat(imag(-result), 'f', -1, 64)
-	}
-	resultString = ""
+	imagPart := strconv.FormatFloat(math.Abs(imag(result)), 'f', -1, 64)
+	var resultString string
 	if real(result) != 0 {
-		resultString += realPart
+		resultString = realPart
 	}
 	if real(result) != 0 && imag(result) != 0 {
-		// DRY the following after finding some sort of "sign" function
-		if imag(result) > 0 {
-			resultString += " + "
-		} else {
-			resultString += " - "
+		sign := " + "
+		if imag(result) < 0 {
+			sign = " - "
 		}
+		resultString += sign
 	}
 	if imag(result) != 0 {
 		if real(result) == 0 && imag(result) < 0 {
 			resultString += " - "
 		}
-		// DRY the following after figuring out how to import math.abs
-		if imag(result) != 1 && imag(result) != -1 {
+		if math.Abs(imag(result)) != 1. {
 			resultString += imagPart
 		}
 		resultString += "i"
@@ -459,11 +421,6 @@ func main() {
 	})
 	router.Run(":" + port)
 	// Use the following when testing the app in a non-server configuration.
-	// expression := "(1+2id(3-4id(5+6i)))**i"
-	// message, resultString := parseExpression(expression)
-	// if len(message) == 0 {
-		// fmt.Println(resultString)
-	// } else {
-		// fmt.Println(message)
-	// }
+	// expression := "1+2id(3-4id(5+6i))"
+	// fmt.Println(handler(expression))
 }
