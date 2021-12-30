@@ -4,7 +4,6 @@ import (
 	"math/cmplx"
 	"strconv"
 	"strings"
-	_ "github.com/heroku/x/hmetrics/onload"
 )
 
 func parseExpression (expression string) (string, complex128) {
