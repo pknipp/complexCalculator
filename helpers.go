@@ -8,16 +8,11 @@ import (
 )
 
 func isLetter(char byte) bool {
-	if char >= 'A' && char <= 'Z' {
-		return true
-	} else if char >= 'a' && char <= 'z' {
-		return true
-	}
-	return false
+	return (char >= 'A' && char <= 'Z') || (char >= 'a' && char <= 'z')
 }
 
 func isNonzero(z complex128, m *string) bool {
-	isZero := z == complex(0., 0.);
+	isZero := z == complex(0., 0.)
 	if isZero {
 		*m = "A singularity exists in this expression."
 	}
@@ -49,19 +44,19 @@ func binary(z1 complex128, op string, z2 complex128) (string, complex128) {
 }
 
 func findSize (expression string) (string, int) {
-	nParen := 1
+	nParen := 1 // leading paren has been found, in calling function
 	for nExpression := 0; nExpression < len(expression); nExpression++ {
 		if char := expression[nExpression: nExpression + 1]; char == "(" {
 			nParen++
 		} else if char == ")" {
 			nParen--
 		}
-		// Closing parenthesis has been found.
 		if nParen == 0 {
+			// Closing parenthesis has been found.
 			return "", nExpression
 		}
 	}
-	return "No closing parenthesis was found for the following string: '" + expression + "'.", 0
+	return "No closing parenthesis was found for the following string: (" + expression, 0
 }
 
 // I don't think that this function'll ever fail.
