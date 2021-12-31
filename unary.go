@@ -2,7 +2,7 @@ package main
 
 import "math/cmplx"
 
-func unary (method string, z complex128) (string, complex128) {
+func unary (method string, z complex128) (complex128, string) {
 	ONE := complex(1., 0.)
 	var result complex128
 	var message string
@@ -102,7 +102,7 @@ func unary (method string, z complex128) (string, complex128) {
 		case "Tanh":
 			result = cmplx.Tanh(z)
 		default:
-			message = "There exists no such function by this name.  Check spelling and capitalization."
+			message = method + " is a nonexistent function.  Check your spelling."
 	}
-	return message, result
+	return result, message
 }

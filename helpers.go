@@ -19,7 +19,7 @@ func isNonzero(z complex128, m *string) bool {
 	return !isZero
 }
 
-func binary(z1 complex128, op string, z2 complex128) (string, complex128) {
+func binary(z1 complex128, op string, z2 complex128) (complex128, string) {
 	var result complex128
 	var message string
 	switch op {
@@ -38,13 +38,14 @@ func binary(z1 complex128, op string, z2 complex128) (string, complex128) {
 				result = cmplx.Pow(z1, z2)
 			}
 		default:
-			message = "The operation " + op + " is unknown." // I think that this'll never be hit, because of my use of OPS.
+			// I think that this'll never be hit, because of my use of OPS in an outer function.
+			message = "The operation " + op + " is unknown."
 	}
-	return message, result
+	return result, message
 }
 
-func findSize (expression string) (string, int) {
-	nParen := 1 // leading paren has been found, in calling function
+func findSize (expression string) (int, string) {
+	nParen := 1 // leading (open)paren has been found, in calling function
 	for nExpression := 0; nExpression < len(expression); nExpression++ {
 		if char := expression[nExpression: nExpression + 1]; char == "(" {
 			nParen++
@@ -53,10 +54,10 @@ func findSize (expression string) (string, int) {
 		}
 		if nParen == 0 {
 			// Closing parenthesis has been found.
-			return "", nExpression
+			return nExpression, ""
 		}
 	}
-	return "No closing parenthesis was found for the following string: (" + expression, 0
+	return 0, "No closing parenthesis was found for this string: (" + expression
 }
 
 // I don't think that this function'll ever fail.
@@ -72,7 +73,7 @@ func doRegExp(expression string) string {
 
 func handler(expression string) string {
 	// expression = expression[1:] This was used when I used r.URL.path
-	message, result := parseExpression(expression)
+	result, message := parseExpression(expression)
 	if len(message) != 0 {
 		return "ERROR: " + message
 	}

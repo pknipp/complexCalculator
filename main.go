@@ -9,7 +9,7 @@ import (
 )
 
 // The following enables easy toggling of package between CLI version (for testing) and web version.
-var isWebVersion bool = false
+var isWebVersion bool = true
 
 func main() {
 	if isWebVersion {
@@ -47,7 +47,7 @@ func main() {
 		})
 		router.Run(":" + port)
 	} else {
-		expression := "(1+2i"
+		expression := "loG(1+2id(3-4id(5+6i)))^(1+i)"
 		fmt.Println(handler(expression))
 	}
 }
