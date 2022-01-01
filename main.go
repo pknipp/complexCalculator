@@ -9,7 +9,7 @@ import (
 )
 
 // The following enables easy toggling of package between CLI version (for testing) and web version.
-var isWebVersion bool = true
+var isWebVersion bool = false
 
 func main() {
 	if isWebVersion {

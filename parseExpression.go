@@ -40,9 +40,6 @@ func parseExpression (expression string) (complex128, string) {
 		} else if isLetter(leadingChar[0]) {
 			// If leadingChar is lower-case, convert it to uppercase to facilitate comparison w/our list of unaries.
 			leadingChar = strings.ToUpper(leadingChar)
-			// if (leadingChar[0] > 96) {
-				// leadingChar = string(leadingChar[0] - 32)
-			// }
 			expression = expression[1:]
 			if len(expression) == 0 {
 				return ZERO, "", "This unary function invocation ends prematurely."
