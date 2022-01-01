@@ -5,7 +5,10 @@ import (
 	"math"
 	"regexp"
 	"strconv"
+	"encoding/json"
 )
+
+var unitSlice = []string{"kg", "m", "s"}
 
 func isLetter(char byte) bool {
 	return (char >= 'A' && char <= 'Z') || (char >= 'a' && char <= 'z')
@@ -21,7 +24,6 @@ func isNonzero(z complex128, m *string) bool {
 
 func binary(z1 quantityType, op string, z2 quantityType) (quantityType, string) {
 	var result quantityType
-	unitSlice := []string{"m", "kg", "s"}
 	var message string
 	var ok bool
 	haveSameUnits := func(z1, z2 quantityType) (bool, string) {
@@ -117,6 +119,11 @@ func doRegExp(expression string) string {
 	return expression
 }
 
+type unitPower struct {
+	unit string
+	power complex128
+}
+
 func handler(expression string) string {
 	// expression = expression[1:] This was used when I used r.URL.path
 	result, message := parseExpression(expression)
@@ -125,6 +132,25 @@ func handler(expression string) string {
 	}
 	realPart := strconv.FormatFloat(real(result.val), 'f', -1, 64)
 	imagPart := strconv.FormatFloat(math.Abs(imag(result.val)), 'f', -1, 64)
+	posUnits := []unitPower{}
+	negUnits := []unitPower{}
+	for unit, power := range result.units {
+		if real(power) > 0 {
+			posUnits = append(posUnits, unitPower{unit, power})
+		} else {
+			negUnits = append(negUnits, unitPower{unit, power})
+		}
+	}
+	unitString := ""
+	for _, pair := range posUnits {
+		pairPower, _ := json.Marshal(pair.power)
+		unitString += pair.unit + string(pairPower)
+	}
+	for _, pair := range negUnits {
+		pairPower, _ := json.Marshal(pair.power)
+		unitString += "/" + pair.unit + string(pairPower)
+	}
+
 	var resultString string
 	if real(result.val) != 0 {
 		resultString = realPart
@@ -148,5 +174,5 @@ func handler(expression string) string {
 	if real(result.val) == 0 && imag(result.val) == 0 {
 		resultString = "0"
 	}
-	return resultString
+	return resultString + unitString
 }
