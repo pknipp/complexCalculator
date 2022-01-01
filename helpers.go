@@ -5,7 +5,7 @@ import (
 	"math"
 	"regexp"
 	"strconv"
-	"encoding/json"
+	"fmt"
 )
 
 var unitSlice = []string{"kg", "m", "s"}
@@ -143,12 +143,10 @@ func handler(expression string) string {
 	}
 	unitString := ""
 	for _, pair := range posUnits {
-		pairPower, _ := json.Marshal(pair.power)
-		unitString += pair.unit + string(pairPower)
+		unitString += pair.unit + fmt.Sprintf("%f", real(pair.power)) + "+" + fmt.Sprintf("%f", imag(pair.power)) + "i"
 	}
 	for _, pair := range negUnits {
-		pairPower, _ := json.Marshal(pair.power)
-		unitString += "/" + pair.unit + string(pairPower)
+		unitString += "/" + pair.unit + fmt.Sprintf("%f", -real(pair.power)) + "+" + fmt.Sprintf("%f", -imag(pair.power)) + "i"
 	}
 
 	var resultString string
