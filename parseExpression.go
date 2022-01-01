@@ -6,13 +6,20 @@ import (
 	"strings"
 )
 
-func parseExpression (expression string) (complex128, string) {
-	ZERO, TEN := complex(0., 0.), complex(10., 0.)
+type unitType map[string]int
+type quantityType struct{
+	val complex128
+	units unitType
+}
+
+func parseExpression (expression string) (quantityType, string) {
+	var units unitType
+	TEN := complex(10., 0.)
 	message := ""
 	// Following pre-processing line is needed if/when this code is tested in a non-server configuration.
 	expression = doRegExp(expression)
-	getNumber := func(expression *string) (complex128, string){
-		var val complex128
+	getNumber := func(expression *string) (quantityType, string){
+		var val quantityType
 		message := ""
 		if len(*expression) == 0 {
 			return val, "Your expression truncates prematurely."
@@ -24,26 +31,26 @@ func parseExpression (expression string) (complex128, string) {
 			var nExpression int
 			nExpression, message = findSize(*expression)
 			if len(message) != 0 {
-				return ZERO, message
+				return val, message
 			}
 			// recursive call to evalulate what is in parentheses
 			val, message = parseExpression((*expression)[0:nExpression])
 			if len(message) != 0 {
-				return ZERO, message
+				return val, message
 			}
 			// From expression remove trailing parenthesis and stuff preceding it.
 			*expression = (*expression)[nExpression + 1:]
 			return val, message
 		} else if leadingChar == "i" {
 			*expression = (*expression)[1:]
-			return complex(0, 1), message
+			return quantityType{val: complex(0, 1), units: units}, message
 		} else if isLetter(leadingChar[0]) {
 			// A letter triggers that we are looking at either start of a unary function name, or E-notation
 			// If leadingChar is lower-case, convert it to uppercase to facilitate comparison w/our list of unaries.
 			leadingChar = strings.ToUpper(leadingChar)
 			*expression = (*expression)[1:]
 			if len(*expression) == 0 {
-				return ZERO, "This unary function invocation ends prematurely."
+				return val, "This unary function invocation ends prematurely."
 			}
 			if isLetter((*expression)[0]) {
 				// If the 2nd character's a letter, this is an invocation of a unary function.
@@ -54,26 +61,31 @@ func parseExpression (expression string) (complex128, string) {
 					method += strings.ToLower((*expression)[0: 1])
 					*expression = (*expression)[1:]
 					if len(*expression) == 0 {
-						return ZERO, "The argument of this unary function seems nonexistent."
+						return val, "The argument of this unary function seems nonexistent."
 					}
 				}
 				var nExpression int
 				// Remove leading parenthesis
 				*expression = (*expression)[1:]
 				nExpression, message = findSize(*expression)
-				var arg complex128
+				var arg quantityType
 				if len(message) != 0 {
-					return ZERO, message
+					return val, message
 				}
 				// recursive call, for argument of unary
 				arg, message = parseExpression((*expression)[0: nExpression])
 				if len(message) != 0 {
-					return ZERO, message
+					return val, message
 				}
-				val, message = unary(method, arg)
+				for _, power := range arg.units {
+					if power != 0 {
+						return val, "The argument of " + method + " is NOT dimensionless."
+					}
+				}
+				z, message := unary(method, arg.val)
 				// Trim argument of unary from beginning of expression
 				*expression = (*expression)[nExpression + 1:]
-				return val, message
+				return quantityType{val: z, units: units}, message
 			} else if leadingChar[0] == 'E' {
 				// If expression is not a unary, the user is representing scientific notation with an "E"
 				message = "Your scientific notation (the start of " + leadingChar + *expression + ") is improperly formatted."
@@ -83,7 +95,7 @@ func parseExpression (expression string) (complex128, string) {
 						if num, err := strconv.ParseInt(z, 10, 64); err != nil {
 							break
 						} else {
-							val = cmplx.Pow(TEN, complex(float64(num), 0.))
+							val = quantityType{val: cmplx.Pow(TEN, complex(float64(num), 0.)), units: units}
 							message = ""
 						}
 					}
@@ -106,7 +118,7 @@ func parseExpression (expression string) (complex128, string) {
 					if num, err := strconv.ParseFloat(z, 64); err != nil {
 						break
 					} else {
-						val = complex(num, 0.)
+						val = quantityType{val: complex(num, 0.), units: units}
 						message = ""
 					}
 				}
@@ -115,12 +127,12 @@ func parseExpression (expression string) (complex128, string) {
 			*expression = (*expression)[p - 1:]
 			return val, message
 		}
-		return ZERO, "Could not parse " + leadingChar + *expression
+		return val, "Could not parse " + leadingChar + *expression
 	}
 	// struct fields consist of binary operation and 2nd number of the pair
 	type opNum struct {
 		op string
-		num complex128
+		num quantityType
 	}
 
 	if len(expression) > 0 {
@@ -129,17 +141,17 @@ func parseExpression (expression string) (complex128, string) {
 			expression = expression[1:]
 		}
 	}
-	// z is lead number, and num is any of the following ones
-	var z, num complex128
+	// val is lead quantity, and nextVal is any of the following ones
+	var val, nextVal quantityType
+	pairs := []opNum{}
 	// trim&store leading number from expression
-	z, message = getNumber(&expression)
+	val, message = getNumber(&expression)
 	if len(message) != 0 {
-		return ZERO, message
+		return val, message
 	}
 	PRECEDENCE := map[string]int{"+": 0, "-": 0, "*": 1, "/": 1, "^": 2}
 	OPS := "+-*/^"
 	// loop thru the expression, while trimming off (and storing in "pairs" slice) operation/number pairs
-	pairs := []opNum{}
 	for len(expression) > 0 {
 		op := expression[0:1]
 		if strings.Contains(OPS, op) {
@@ -148,10 +160,10 @@ func parseExpression (expression string) (complex128, string) {
 			// It must be implied multiplication, so overwrite value of op.
 			op = "*"
 		}
-		if num, message = getNumber(&expression); len(message) != 0 {
-			return ZERO, message
+		if nextVal, message = getNumber(&expression); len(message) != 0 {
+			return val, message
 		} else {
-			pairs = append(pairs, opNum{op, num})
+			pairs = append(pairs, opNum{op, nextVal})
 		}
 	}
 	// loop thru "pairs" slice, evaluating operations in order of their precedence
@@ -159,20 +171,20 @@ func parseExpression (expression string) (complex128, string) {
 		index := 0
 		for len(pairs) > index {
 			if index < len(pairs) - 1 && PRECEDENCE[pairs[index].op] < PRECEDENCE[pairs[index + 1].op] {
-				// skip this operation, owing to its lower prececence
+				// postpone this operation, owing to its lower prececence
 				index++
 			} else {
-				// perform this operation
-				var z1, result complex128
+				// perform this operation NOW
+				var v1, result quantityType
 				if index == 0 {
-					z1 = z
+					v1 = val
 				} else {
-					z1 = pairs[index - 1].num
+					v1 = pairs[index - 1].num
 				}
-				result, message = binary(z1, pairs[index].op, pairs[index].num)
+				result, message = binary(v1, pairs[index].op, pairs[index].num)
 				// mutate the values of z and pairs (reducing the length of the latter by one)
 				if index == 0 {
-					z = result
+					val = result
 					pairs = pairs[1:]
 				} else {
 					pairs[index - 1].num = result
@@ -183,5 +195,5 @@ func parseExpression (expression string) (complex128, string) {
 			}
 		}
 	}
-	return z, message
+	return val, message
 }

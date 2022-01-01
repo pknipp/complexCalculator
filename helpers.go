@@ -19,23 +19,50 @@ func isNonzero(z complex128, m *string) bool {
 	return !isZero
 }
 
-func binary(z1 complex128, op string, z2 complex128) (complex128, string) {
-	var result complex128
+func binary(z1 quantityType, op string, z2 quantityType) (quantityType, string) {
+	var result quantityType
+	var units unitType
 	var message string
+	var ok bool
+	haveSameUnits := func(z1, z2 quantityType) (bool, string) {
+		for unit, power := range z1.units {
+			if power != z1.units[unit] {
+				return false, "You are adding/subtracting quantities w/different units."
+			}
+		}
+		return true, ""
+	}
 	switch op {
 		case "+":
-			result = z1 + z2
+			ok, message = haveSameUnits(z1, z2)
+			if ok {
+				result = quantityType{val: z1.val + z2.val, units: z1.units}
+			}
 		case "-":
-			result = z1 - z2
+			ok, message = haveSameUnits(z1, z2)
+			if ok {
+				result = quantityType{val: z1.val - z2.val, units: z1.units}
+			}
 		case "*":
-			result = z1 * z2
+			for unit, power := range z1.units {
+				units[unit] = power + z2.units[unit]
+			}
+			result = quantityType{val: z1.val * z2.val, units: units}
 		case "/":
-			if isNonzero(z2, &message) {
-				result = z1 / z2
+			for unit, power := range z1.units {
+				units[unit] = power - z2.units[unit]
+			}
+			if isNonzero(z2.val, &message) {
+				result = quantityType{val: z1.val / z2.val, units: units}
 			}
 		case "^":
-			if real(z2) > 0 || isNonzero(z1, &message) {
-				result = cmplx.Pow(z1, z2)
+			for _, power := range z2.units {
+				if power != 0 {
+					return result, "An exponent cannot have units."
+				}
+			}
+			if real(z2.val) > 0 || isNonzero(z1.val, &message) {
+				result = quantityType{val: cmplx.Pow(z1.val, z2.val), units: units}
 			}
 		default:
 			// I think that this'll never be hit, because of my use of OPS in an outer function.
@@ -77,29 +104,29 @@ func handler(expression string) string {
 	if len(message) != 0 {
 		return "ERROR: " + message
 	}
-	realPart := strconv.FormatFloat(real(result), 'f', -1, 64)
-	imagPart := strconv.FormatFloat(math.Abs(imag(result)), 'f', -1, 64)
+	realPart := strconv.FormatFloat(real(result.val), 'f', -1, 64)
+	imagPart := strconv.FormatFloat(math.Abs(imag(result.val)), 'f', -1, 64)
 	var resultString string
-	if real(result) != 0 {
+	if real(result.val) != 0 {
 		resultString = realPart
 	}
-	if real(result) != 0 && imag(result) != 0 {
+	if real(result.val) != 0 && imag(result.val) != 0 {
 		sign := " + "
-		if imag(result) < 0 {
+		if imag(result.val) < 0 {
 			sign = " - "
 		}
 		resultString += sign
 	}
-	if imag(result) != 0 {
-		if real(result) == 0 && imag(result) < 0 {
+	if imag(result.val) != 0 {
+		if real(result.val) == 0 && imag(result.val) < 0 {
 			resultString += " - "
 		}
-		if math.Abs(imag(result)) != 1. {
+		if math.Abs(imag(result.val)) != 1. {
 			resultString += imagPart
 		}
 		resultString += "i"
 	}
-	if real(result) == 0 && imag(result) == 0 {
+	if real(result.val) == 0 && imag(result.val) == 0 {
 		resultString = "0"
 	}
 	return resultString
