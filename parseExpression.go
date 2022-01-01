@@ -6,14 +6,12 @@ import (
 	"strings"
 )
 
-type unitType map[string]int
 type quantityType struct{
 	val complex128
-	units unitType
+	units map[string]complex128
 }
 
 func parseExpression (expression string) (quantityType, string) {
-	var units unitType
 	TEN := complex(10., 0.)
 	message := ""
 	// Following pre-processing line is needed if/when this code is tested in a non-server configuration.
@@ -43,7 +41,19 @@ func parseExpression (expression string) (quantityType, string) {
 			return val, message
 		} else if leadingChar == "i" {
 			*expression = (*expression)[1:]
-			return quantityType{val: complex(0, 1), units: units}, message
+			return quantityType{val: complex(0, 1), units: nil}, message
+		} else if leadingChar == "m" {
+			*expression = (*expression)[1:]
+			units := map[string]complex128{"m": complex(1., 0.)}
+			return quantityType{val: complex(1, 0), units: units}, message
+		} else if leadingChar == "s" {
+			*expression = (*expression)[1:]
+			units := map[string]complex128{"s": complex(1., 0.)}
+			return quantityType{val: complex(1, 0), units: units}, message
+		} else if len(*expression) > 1 && (*expression)[0:2] == "kg" {
+			*expression = (*expression)[2:]
+			units := map[string]complex128{"kg": complex(1., 0.)}
+			return quantityType{val: complex(1, 0), units: units}, message
 		} else if isLetter(leadingChar[0]) {
 			// A letter triggers that we are looking at either start of a unary function name, or E-notation
 			// If leadingChar is lower-case, convert it to uppercase to facilitate comparison w/our list of unaries.
@@ -85,7 +95,7 @@ func parseExpression (expression string) (quantityType, string) {
 				z, message := unary(method, arg.val)
 				// Trim argument of unary from beginning of expression
 				*expression = (*expression)[nExpression + 1:]
-				return quantityType{val: z, units: units}, message
+				return quantityType{val: z, units: nil}, message
 			} else if leadingChar[0] == 'E' {
 				// If expression is not a unary, the user is representing scientific notation with an "E"
 				message = "Your scientific notation (the start of " + leadingChar + *expression + ") is improperly formatted."
@@ -95,7 +105,7 @@ func parseExpression (expression string) (quantityType, string) {
 						if num, err := strconv.ParseInt(z, 10, 64); err != nil {
 							break
 						} else {
-							val = quantityType{val: cmplx.Pow(TEN, complex(float64(num), 0.)), units: units}
+							val = quantityType{val: cmplx.Pow(TEN, complex(float64(num), 0.)), units: nil}
 							message = ""
 						}
 					}
@@ -118,7 +128,7 @@ func parseExpression (expression string) (quantityType, string) {
 					if num, err := strconv.ParseFloat(z, 64); err != nil {
 						break
 					} else {
-						val = quantityType{val: complex(num, 0.), units: units}
+						val = quantityType{val: complex(num, 0.), units: nil}
 						message = ""
 					}
 				}
@@ -142,7 +152,8 @@ func parseExpression (expression string) (quantityType, string) {
 		}
 	}
 	// val is lead quantity, and nextVal is any of the following ones
-	var val, nextVal quantityType
+	val := quantityType{val: 0, units: nil}
+	nextVal := quantityType{val: 0, units: nil}
 	pairs := []opNum{}
 	// trim&store leading number from expression
 	val, message = getNumber(&expression)
@@ -161,7 +172,7 @@ func parseExpression (expression string) (quantityType, string) {
 			op = "*"
 		}
 		if nextVal, message = getNumber(&expression); len(message) != 0 {
-			return val, message
+			return nextVal, message
 		} else {
 			pairs = append(pairs, opNum{op, nextVal})
 		}
@@ -171,7 +182,7 @@ func parseExpression (expression string) (quantityType, string) {
 		index := 0
 		for len(pairs) > index {
 			if index < len(pairs) - 1 && PRECEDENCE[pairs[index].op] < PRECEDENCE[pairs[index + 1].op] {
-				// postpone this operation, owing to its lower prececence
+				// postpone this operation because of its lower prececence
 				index++
 			} else {
 				// perform this operation NOW

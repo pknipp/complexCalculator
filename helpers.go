@@ -21,17 +21,23 @@ func isNonzero(z complex128, m *string) bool {
 
 func binary(z1 quantityType, op string, z2 quantityType) (quantityType, string) {
 	var result quantityType
-	var units unitType
+	unitSlice := []string{"m", "kg", "s"}
 	var message string
 	var ok bool
 	haveSameUnits := func(z1, z2 quantityType) (bool, string) {
-		for unit, power := range z1.units {
-			if power != z1.units[unit] {
-				return false, "You are adding/subtracting quantities w/different units."
+		for _, unit := range unitSlice {
+			power1, in1 := z1.units[unit]
+			power2, in2 := z2.units[unit]
+			if in1 == in2 {
+				if power1 == power2 {
+					return true, ""
+				}
 			}
+			return false, "You are adding/subtracting quantities w/different units."
 		}
 		return true, ""
 	}
+	units := map[string]complex128{}
 	switch op {
 		case "+":
 			ok, message = haveSameUnits(z1, z2)
@@ -44,13 +50,23 @@ func binary(z1 quantityType, op string, z2 quantityType) (quantityType, string) 
 				result = quantityType{val: z1.val - z2.val, units: z1.units}
 			}
 		case "*":
-			for unit, power := range z1.units {
-				units[unit] = power + z2.units[unit]
+			for _, unit := range unitSlice {
+				if power, found := z1.units[unit]; found {
+					units[unit] = power
+				}
+				if power, found := z2.units[unit]; found {
+					units[unit] += power
+				}
 			}
 			result = quantityType{val: z1.val * z2.val, units: units}
 		case "/":
-			for unit, power := range z1.units {
-				units[unit] = power - z2.units[unit]
+			for _, unit := range unitSlice {
+				if power, found := z1.units[unit]; found {
+					units[unit] = power
+				}
+				if power, found := z2.units[unit]; found {
+					units[unit] -= power
+				}
 			}
 			if isNonzero(z2.val, &message) {
 				result = quantityType{val: z1.val / z2.val, units: units}
@@ -60,6 +76,9 @@ func binary(z1 quantityType, op string, z2 quantityType) (quantityType, string) 
 				if power != 0 {
 					return result, "An exponent cannot have units."
 				}
+			}
+			for unit, power := range z1.units {
+				units[unit] = power * z2.val
 			}
 			if real(z2.val) > 0 || isNonzero(z1.val, &message) {
 				result = quantityType{val: cmplx.Pow(z1.val, z2.val), units: units}

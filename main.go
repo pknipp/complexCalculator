@@ -47,7 +47,7 @@ func main() {
 		})
 		router.Run(":" + port)
 	} else {
-		expression := "1+2id(3-4id(5+6i))"
+		expression := "8m+2m/s(3s)+0.5*4m/s/s(3s)**2"
 		result, message := parseExpression(expression)
 		fmt.Println(result, message)
 		// fmt.Println(handler(expression))
