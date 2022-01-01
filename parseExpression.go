@@ -11,72 +11,74 @@ func parseExpression (expression string) (complex128, string) {
 	message := ""
 	// Following pre-processing line is needed if/when this code is tested in a non-server configuration.
 	expression = doRegExp(expression)
-	getNumber := func(expression string) (complex128, string, string){
+	getNumber := func(expression *string) (complex128, string){
 		var val complex128
 		message := ""
-		if len(expression) == 0 {
-			return val, expression, "Your expression truncates prematurely."
+		if len(*expression) == 0 {
+			return val, "Your expression truncates prematurely."
 		}
-		leadingChar := expression[0:1]
+		leadingChar := (*expression)[0:1]
 		if leadingChar == "(" {
 			var nExpression int
 			// remove leading parenthesis
-			expression = expression[1:]
-			nExpression, message = findSize(expression)
+			*expression = (*expression)[1:]
+			nExpression, message = findSize(*expression)
 			if len(message) != 0 {
-				return ZERO, "", message
+				return ZERO, message
 			}
 			// recursive call to evalulate what is in parentheses
-			val, message = parseExpression(expression[0:nExpression])
+			val, message = parseExpression((*expression)[0:nExpression])
 			if len(message) != 0 {
-				return ZERO, "", message
+				return ZERO, message
 			}
 			// From expression remove trailing parenthesis and stuff preceding it.
-			expression = expression[nExpression + 1:]
-			return val, expression, message
+			*expression = (*expression)[nExpression + 1:]
+			return val, message
 		} else if leadingChar == "i" {
-			return complex(0, 1), expression[1:], message
+			*expression = (*expression)[1:]
+			return complex(0, 1), message
 			// A letter triggers that we are looking at start of a unary function name.
 		} else if isLetter(leadingChar[0]) {
 			// If leadingChar is lower-case, convert it to uppercase to facilitate comparison w/our list of unaries.
 			leadingChar = strings.ToUpper(leadingChar)
-			expression = expression[1:]
-			if len(expression) == 0 {
-				return ZERO, "", "This unary function invocation ends prematurely."
+			*expression = (*expression)[1:]
+			if len(*expression) == 0 {
+				return ZERO, "This unary function invocation ends prematurely."
 			}
 			// If the 2nd character's a letter, this is an invocation of a unary function.
-			if isLetter(expression[0]) {
+			if isLetter((*expression)[0]) {
 				method := leadingChar
 				// We seek an open paren, which signifies start of argument (& end of method name)
-				for expression[0:1] != "(" {
+				for (*expression)[0:1] != "(" {
 					// Append letter to name of method, and trim that letter from beginning of expression.
-					method += strings.ToLower(expression[0: 1])
-					expression = expression[1:]
-					if len(expression) == 0 {
-						return ZERO, "", "The argument of this unary function seems nonexistent."
+					method += strings.ToLower((*expression)[0: 1])
+					*expression = (*expression)[1:]
+					if len(*expression) == 0 {
+						return ZERO, "The argument of this unary function seems nonexistent."
 					}
 				}
 				var nExpression int
 				// Remove leading parenthesis
-				expression = expression[1:]
-				nExpression, message = findSize(expression)
+				*expression = (*expression)[1:]
+				nExpression, message = findSize(*expression)
 				var arg complex128
 				if len(message) != 0 {
-					return ZERO, "", message
+					return ZERO, message
 				}
-				arg, message = parseExpression(expression[0: nExpression])
+				arg, message = parseExpression((*expression)[0: nExpression])
 				if len(message) != 0 {
-					return ZERO, "", message
+					return ZERO, message
 				}
 				val, message = unary(method, arg)
 				// Trim argument of unary from beginning of expression
-				return val, expression[nExpression + 1:], message
+				*expression = (*expression)[nExpression + 1:]
+				return val, message
 				// If not a unary, the user is representing scientific notation
 			} else if leadingChar[0] == 'E' {
-				message = "Your scientific notation (the start of " + leadingChar + expression + ") is improperly formatted."
+				message = "Your scientific notation (the start of " + leadingChar + *expression + ") is improperly formatted."
 				p := 1
-				for len(expression) >= p {
-					if z := expression[0:p]; z != "+" && z != "-" {
+				for len(*expression) >= p {
+					if z := (*expression)[0:p]; z != "+" && z != "-" {
 						if num, err := strconv.ParseInt(z, 10, 64); err != nil {
 							break
 						} else {
@@ -86,17 +88,18 @@ func parseExpression (expression string) (complex128, string) {
 					}
 					p++
 				}
-				return val, expression[p - 1:], message
+				*expression = (*expression)[p - 1:]
+				return val, message
 			}
 		} else {
 			// The following'll change only if strconv.ParseFloat ever returns no error, below.
-			message = "The string '" + expression + "' does not evaluate to a number."
+			message = "The string '" + *expression + "' does not evaluate to a number."
 			p := 1
-			for len(expression) >= p {
+			for len(*expression) >= p {
 				// If implied multiplication is detected ...
-				if  z := expression[0:p]; expression[p - 1: p] == "(" {
+				if  z := (*expression)[0:p]; (*expression)[p - 1: p] == "(" {
 					// ... insert a "*" symbol.
-					expression = expression[0:p - 1] + "*" + expression[p - 1:]
+					*expression = (*expression)[0:p - 1] + "*" + (*expression)[p - 1:]
 					break
 				} else if !(z == "." || z == "-" || z == "-.") {
 					if num, err := strconv.ParseFloat(z, 64); err != nil {
@@ -108,9 +111,10 @@ func parseExpression (expression string) (complex128, string) {
 				}
 				p++
 			}
-			return val, expression[p - 1:], message
+			*expression = (*expression)[p - 1:]
+			return val, message
 		}
-		return ZERO, "", "Could not parse " + leadingChar + expression
+		return ZERO, "Could not parse " + leadingChar + *expression
 	}
 	type opNum struct {
 		op string
@@ -122,7 +126,7 @@ func parseExpression (expression string) (complex128, string) {
 		}
 	}
 	var z, num complex128
-	z, expression, message = getNumber(expression)
+	z, message = getNumber(&expression)
 	if len(message) != 0 {
 		return ZERO, message
 	}
@@ -136,7 +140,7 @@ func parseExpression (expression string) (complex128, string) {
 		} else {
 			op = "*"
 		}
-		if num, expression, message = getNumber(expression); len(message) != 0 {
+		if num, message = getNumber(&expression); len(message) != 0 {
 			return ZERO, message
 		} else {
 			pairs = append(pairs, opNum{op, num})
