@@ -51,6 +51,10 @@ func parseExpression (expression string) (quantityType, string) {
 		} else if leadingChar == "i" {
 			*expression = (*expression)[1:]
 			return quantityType{val: complex(0, 1), units: nil}, message
+		} else if len(*expression) > 2 && (*expression)[0:2] == "mol" {
+				*expression = (*expression)[3:]
+				units := map[string]complex128{"mol": complex(1., 0.)}
+				return quantityType{val: complex(1, 0), units: units}, message
 		} else if sliceContains(unitSlice, leadingChar) {
 			*expression = (*expression)[1:]
 			units := map[string]complex128{}
@@ -59,10 +63,6 @@ func parseExpression (expression string) (quantityType, string) {
 		} else if len(*expression) > 1 && (*expression)[0:2] == "kg" {
 			*expression = (*expression)[2:]
 			units := map[string]complex128{"kg": complex(1., 0.)}
-			return quantityType{val: complex(1, 0), units: units}, message
-		} else if len(*expression) > 2 && (*expression)[0:3] == "mol" {
-			*expression = (*expression)[3:]
-			units := map[string]complex128{"mol": complex(1., 0.)}
 			return quantityType{val: complex(1, 0), units: units}, message
 		} else if isLetter(leadingChar[0]) {
 			// A letter here triggers that we are looking at either start of a unary function name, or E-notation
