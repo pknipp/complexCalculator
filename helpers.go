@@ -135,20 +135,24 @@ func handler(expression string) (string, [][2]string, [][2]string) {
 	realPart := strconv.FormatFloat(real(result.val), 'f', -1, 64)
 	imagPart := strconv.FormatFloat(math.Abs(imag(result.val)), 'f', -1, 64)
 	for unit, power := range result.units {
-		if real(power) > 0 {
-			posUnits = append(posUnits, [2]string{unit, fmt.Sprintf("%f", real(power)) + "+" + fmt.Sprintf("%f", imag(power)) + "i"})
+		var reString, imString string
+		reFloat, imFloat := int(real(power)), int(imag(power))
+		if float64(reFloat) == real(power) {
+			reString = string(reFloat)
 		} else {
-			negUnits = append(negUnits, [2]string{unit, fmt.Sprintf("%f", -real(power)) + "+" + fmt.Sprintf("%f", -imag(power)) + "i"})
+			reString = fmt.Sprintf("%f", real(power))
+		}
+		if float64(imFloat) == imag(power) {
+			imString = string(int(math.Abs(imag(power))))
+		} else {
+			imString = fmt.Sprintf("%f", -imag(power))
+		}
+		if real(power) > 0 {
+			posUnits = append(posUnits, [2]string{unit,  reString + "+" + imString + "i"})
+		} else {
+			negUnits = append(negUnits, [2]string{unit,  reString + "+" + imString + "i"})
 		}
 	}
-	// unitString := ""
-	// for _, pair := range posUnits {
-		// unitString += pair.unit + fmt.Sprintf("%f", real(pair.power)) + "+" + fmt.Sprintf("%f", imag(pair.power)) + "i"
-	// }
-	// for _, pair := range negUnits {
-		// unitString += pair.unit + fmt.Sprintf("%f", -real(pair.power)) + "+" + fmt.Sprintf("%f", -imag(pair.power)) + "i"
-	// }
-//
 	var resultString string
 	if real(result.val) != 0 {
 		resultString = realPart
