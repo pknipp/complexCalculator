@@ -136,7 +136,7 @@ func handler(expression string) string {
 	negUnits := []unitPower{}
 	for unit, power := range result.units {
 		if real(power) > 0 {
-			posUnits = append(posUnits, []{unit, power})
+			posUnits = append(posUnits, unitPower{unit, power})
 		} else {
 			negUnits = append(negUnits, unitPower{unit, -power})
 		}
