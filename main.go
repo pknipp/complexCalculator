@@ -30,17 +30,20 @@ func main() {
 		resultText := "numerical value"
 		router.GET("/:expression", func(c *gin.Context) {
 			expression := doRegExp(c.Param("expression"))
-			resultValue := handler(expression)
+			resultValue, posUnits, negUnits := handler(expression)
 			c.HTML(http.StatusOK, "result.tmpl.html", gin.H{
 					"expressionText": expressionText,
 					"expressionValue": expression,
 					"resultText": resultText,
 					"resultValue": resultValue,
+					"posUnits": posUnits,
+					"negUnits": negUnits,
 			})
 		})
 		router.GET("/json/:expression", func(c *gin.Context) {
 			expression := doRegExp(c.Param("expression"))
-			resultString := "{\"" + expressionText + "\": " + expression + ", \"" + resultText + "\": " + handler(expression) + "}"
+			resultValue, _, _ := handler(expression)
+			resultString := "{\"" + expressionText + "\": " + expression + ", \"" + resultText + "\": " + resultValue + "}"
 			c.String(http.StatusOK, resultString)
 		})
 		router.NoRoute(func(c *gin.Context) {

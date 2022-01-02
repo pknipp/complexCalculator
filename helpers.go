@@ -124,27 +124,27 @@ type unitPower struct {
 	power complex128
 }
 
-func handler(expression string) string {
+func handler(expression string) (string, [][2]string, [][2]string) {
 	// expression = expression[1:] This was used when I used r.URL.path
 	result, message := parseExpression(expression)
+	posUnits := [][2]string{}
+	negUnits := [][2]string{}
 	if len(message) != 0 {
-		return "ERROR: " + message
+		return "ERROR: " + message, posUnits, negUnits
 	}
 	realPart := strconv.FormatFloat(real(result.val), 'f', -1, 64)
 	imagPart := strconv.FormatFloat(math.Abs(imag(result.val)), 'f', -1, 64)
-	posUnits := []unitPower{}
-	negUnits := []unitPower{}
 	for unit, power := range result.units {
 		if real(power) > 0 {
-			posUnits = append(posUnits, unitPower{unit, power})
+			posUnits = append(posUnits, [2]string{unit, fmt.Sprintf("%f", real(power)) + "+" + fmt.Sprintf("%f", imag(power)) + "i"})
 		} else {
-			negUnits = append(negUnits, unitPower{unit, -power})
+			negUnits = append(negUnits, [2]string{unit, fmt.Sprintf("%f", -real(power)) + "+" + fmt.Sprintf("%f", -imag(power)) + "i"})
 		}
 	}
-	unitString := ""
-	for _, pair := range posUnits {
-		unitString += pair.unit + fmt.Sprintf("%f", real(pair.power)) + "+" + fmt.Sprintf("%f", imag(pair.power)) + "i"
-	}
+	// unitString := ""
+	// for _, pair := range posUnits {
+		// unitString += pair.unit + fmt.Sprintf("%f", real(pair.power)) + "+" + fmt.Sprintf("%f", imag(pair.power)) + "i"
+	// }
 	for _, pair := range negUnits {
 		unitString += pair.unit + fmt.Sprintf("%f", -real(pair.power)) + "+" + fmt.Sprintf("%f", -imag(pair.power)) + "i"
 	}
@@ -172,5 +172,5 @@ func handler(expression string) string {
 	if real(result.val) == 0 && imag(result.val) == 0 {
 		resultString = "0"
 	}
-	return resultString + unitString
+	return resultString, posUnits, negUnits //+ unitString
 }
