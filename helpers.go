@@ -135,22 +135,28 @@ func handler(expression string) (string, [][2]string, [][2]string) {
 	realPart := strconv.FormatFloat(real(result.val), 'f', -1, 64)
 	imagPart := strconv.FormatFloat(math.Abs(imag(result.val)), 'f', -1, 64)
 	for unit, power := range result.units {
-		var reString, imString string
+		var powString string
 		reFloat, imFloat := int(real(power)), int(imag(power))
 		if float64(reFloat) == real(power) {
-			reString = strconv.Itoa(reFloat)
+			if math.Abs(real(power)) == 1. {
+				powString = ""
+			} else {
+				powString = strconv.Itoa(int(math.Abs(real(power))))
+			}
 		} else {
-			reString = fmt.Sprintf("%f", real(power))
+			powString = fmt.Sprintf("%f", real(power))
 		}
-		if float64(imFloat) == imag(power) {
-			imString = strconv.Itoa(int(math.Abs(imag(power))))
-		} else {
-			imString = fmt.Sprintf("%f", math.Abs(imag(power)))
+		if imag(power) != 0. {
+			if float64(imFloat) == imag(power) {
+				powString += "+" + strconv.Itoa(int(math.Abs(imag(power)))) + "i"
+			} else {
+				powString += "+" + fmt.Sprintf("%f", math.Abs(imag(power))) + "i"
+			}
 		}
 		if real(power) > 0 {
-			posUnits = append(posUnits, [2]string{unit,  reString + "+" + imString + "i"})
+			posUnits = append(posUnits, [2]string{unit,  powString})
 		} else {
-			negUnits = append(negUnits, [2]string{unit,  reString + "+" + imString + "i"})
+			negUnits = append(negUnits, [2]string{unit,  powString})
 		}
 	}
 	var resultString string
