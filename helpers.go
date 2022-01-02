@@ -136,9 +136,9 @@ func handler(expression string) string {
 	negUnits := []unitPower{}
 	for unit, power := range result.units {
 		if real(power) > 0 {
-			posUnits = append(posUnits, unitPower{unit, power})
+			posUnits = append(posUnits, []{unit, power})
 		} else {
-			negUnits = append(negUnits, unitPower{unit, power})
+			negUnits = append(negUnits, unitPower{unit, -power})
 		}
 	}
 	unitString := ""
@@ -146,7 +146,7 @@ func handler(expression string) string {
 		unitString += pair.unit + fmt.Sprintf("%f", real(pair.power)) + "+" + fmt.Sprintf("%f", imag(pair.power)) + "i"
 	}
 	for _, pair := range negUnits {
-		unitString += "&#8725;" + pair.unit + fmt.Sprintf("%f", -real(pair.power)) + "+" + fmt.Sprintf("%f", -imag(pair.power)) + "i"
+		unitString += pair.unit + fmt.Sprintf("%f", -real(pair.power)) + "+" + fmt.Sprintf("%f", -imag(pair.power)) + "i"
 	}
 
 	var resultString string
