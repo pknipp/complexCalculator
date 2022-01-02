@@ -11,6 +11,15 @@ type quantityType struct{
 	units map[string]complex128
 }
 
+func sliceContains (slice []string, char string) bool {
+	for _, thisChar := range slice {
+		if thisChar == char {
+			return true
+		}
+	}
+	return false
+}
+
 func parseExpression (expression string) (quantityType, string) {
 	TEN := complex(10., 0.)
 	message := ""
@@ -42,14 +51,19 @@ func parseExpression (expression string) (quantityType, string) {
 		} else if leadingChar == "i" {
 			*expression = (*expression)[1:]
 			return quantityType{val: complex(0, 1), units: nil}, message
-		} else if leadingChar == "m" {
+		} else if sliceContains(unitSlice, leadingChar) {
 			*expression = (*expression)[1:]
-			units := map[string]complex128{"m": complex(1., 0.)}
+			units := map[string]complex128{}
+			units[leadingChar] = complex(1., 0.)
 			return quantityType{val: complex(1, 0), units: units}, message
-		} else if leadingChar == "s" {
-			*expression = (*expression)[1:]
-			units := map[string]complex128{"s": complex(1., 0.)}
-			return quantityType{val: complex(1, 0), units: units}, message
+		// } else if leadingChar == "m" {
+			// *expression = (*expression)[1:]
+			// units := map[string]complex128{"m": complex(1., 0.)}
+			// return quantityType{val: complex(1, 0), units: units}, message
+		// } else if leadingChar == "s" {
+			// *expression = (*expression)[1:]
+			// units := map[string]complex128{"s": complex(1., 0.)}
+			// return quantityType{val: complex(1, 0), units: units}, message
 		} else if len(*expression) > 1 && (*expression)[0:2] == "kg" {
 			*expression = (*expression)[2:]
 			units := map[string]complex128{"kg": complex(1., 0.)}
