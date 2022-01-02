@@ -8,7 +8,7 @@ import (
 	"fmt"
 )
 
-var unitSlice = []string{"kg", "m", "s", "K"}
+var unitSlice = []string{"kg", "m", "s", "K", "mol"}
 
 func isLetter(char byte) bool {
 	return (char >= 'A' && char <= 'Z') || (char >= 'a' && char <= 'z')
