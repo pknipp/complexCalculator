@@ -146,7 +146,7 @@ func handler(expression string) string {
 		unitString += pair.unit + fmt.Sprintf("%f", real(pair.power)) + "+" + fmt.Sprintf("%f", imag(pair.power)) + "i"
 	}
 	for _, pair := range negUnits {
-		unitString += "/" + pair.unit + fmt.Sprintf("%f", -real(pair.power)) + "+" + fmt.Sprintf("%f", -imag(pair.power)) + "i"
+		unitString += "&#8725;" + pair.unit + fmt.Sprintf("%f", -real(pair.power)) + "+" + fmt.Sprintf("%f", -imag(pair.power)) + "i"
 	}
 
 	var resultString string
