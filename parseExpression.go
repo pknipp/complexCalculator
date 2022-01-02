@@ -87,15 +87,10 @@ func parseExpression (expression string) (quantityType, string) {
 				if len(message) != 0 {
 					return val, message
 				}
-				for _, power := range arg.units {
-					if power != 0 {
-						return val, "The argument of " + method + " is NOT dimensionless."
-					}
-				}
-				z, message := unary(method, arg.val)
+				quantity, message := unary(method, arg)
 				// Trim argument of unary from beginning of expression
 				*expression = (*expression)[nExpression + 1:]
-				return quantityType{val: z, units: nil}, message
+				return quantityType{val: quantity.val, units: quantity.units}, message
 			} else if leadingChar[0] == 'E' {
 				// If expression is not a unary, the user is representing scientific notation with an "E"
 				message = "Your scientific notation (the start of " + leadingChar + *expression + ") is improperly formatted."
