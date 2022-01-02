@@ -51,10 +51,10 @@ func parseExpression (expression string) (quantityType, string) {
 		} else if leadingChar == "i" {
 			*expression = (*expression)[1:]
 			return quantityType{val: complex(0, 1), units: nil}, message
-		} else if len(*expression) > 2 && (*expression)[0:2] == "mol" {
-				*expression = (*expression)[3:]
-				units := map[string]complex128{"mol": complex(1., 0.)}
-				return quantityType{val: complex(1, 0), units: units}, message
+		} else if len(*expression) > 2 && (*expression)[0:3] == "mol" {
+			*expression = (*expression)[3:]
+			units := map[string]complex128{"mol": complex(1., 0.)}
+			return quantityType{val: complex(1, 0), units: units}, message
 		} else if sliceContains(unitSlice, leadingChar) {
 			*expression = (*expression)[1:]
 			units := map[string]complex128{}
