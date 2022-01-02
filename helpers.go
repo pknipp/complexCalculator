@@ -138,14 +138,14 @@ func handler(expression string) (string, [][2]string, [][2]string) {
 		var reString, imString string
 		reFloat, imFloat := int(real(power)), int(imag(power))
 		if float64(reFloat) == real(power) {
-			reString = string(reFloat)
+			reString = strconv.Itoa(reFloat)
 		} else {
 			reString = fmt.Sprintf("%f", real(power))
 		}
 		if float64(imFloat) == imag(power) {
-			imString = string(int(math.Abs(imag(power))))
+			imString = strconv.Itoa(int(math.Abs(imag(power))))
 		} else {
-			imString = fmt.Sprintf("%f", -imag(power))
+			imString = fmt.Sprintf("%f", math.Abs(imag(power)))
 		}
 		if real(power) > 0 {
 			posUnits = append(posUnits, [2]string{unit,  reString + "+" + imString + "i"})
