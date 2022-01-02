@@ -145,10 +145,10 @@ func handler(expression string) (string, [][2]string, [][2]string) {
 	// for _, pair := range posUnits {
 		// unitString += pair.unit + fmt.Sprintf("%f", real(pair.power)) + "+" + fmt.Sprintf("%f", imag(pair.power)) + "i"
 	// }
-	for _, pair := range negUnits {
-		unitString += pair.unit + fmt.Sprintf("%f", -real(pair.power)) + "+" + fmt.Sprintf("%f", -imag(pair.power)) + "i"
-	}
-
+	// for _, pair := range negUnits {
+		// unitString += pair.unit + fmt.Sprintf("%f", -real(pair.power)) + "+" + fmt.Sprintf("%f", -imag(pair.power)) + "i"
+	// }
+//
 	var resultString string
 	if real(result.val) != 0 {
 		resultString = realPart
