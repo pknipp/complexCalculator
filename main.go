@@ -38,6 +38,7 @@ func main() {
 					"resultValue": resultValue,
 					"posUnits": posUnits,
 					"negUnits": negUnits,
+					"hasNeg": len(negUnits) > 0,
 			})
 		})
 		router.GET("/json/:expression", func(c *gin.Context) {

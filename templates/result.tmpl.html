@@ -15,7 +15,7 @@
                     <td>{{ .resultValue}}
                         {{range $i, $pair := .posUnits}}
                             {{index $pair 0}}<sup>{{index $pair 1}}</sup>
-                        {{end}}&sol;{{range $i, $pair := .negUnits}}
+                        {{end}}{{if .hasNeg}}&sol;{{end}}{{range $i, $pair := .negUnits}}
                             {{index $pair 0}}<sup>{{index $pair 1}}</sup>
                         {{end}}
                     </td>
