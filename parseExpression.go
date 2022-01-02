@@ -56,20 +56,12 @@ func parseExpression (expression string) (quantityType, string) {
 			units := map[string]complex128{}
 			units[leadingChar] = complex(1., 0.)
 			return quantityType{val: complex(1, 0), units: units}, message
-		// } else if leadingChar == "m" {
-			// *expression = (*expression)[1:]
-			// units := map[string]complex128{"m": complex(1., 0.)}
-			// return quantityType{val: complex(1, 0), units: units}, message
-		// } else if leadingChar == "s" {
-			// *expression = (*expression)[1:]
-			// units := map[string]complex128{"s": complex(1., 0.)}
-			// return quantityType{val: complex(1, 0), units: units}, message
 		} else if len(*expression) > 1 && (*expression)[0:2] == "kg" {
 			*expression = (*expression)[2:]
 			units := map[string]complex128{"kg": complex(1., 0.)}
 			return quantityType{val: complex(1, 0), units: units}, message
 		} else if isLetter(leadingChar[0]) {
-			// A letter triggers that we are looking at either start of a unary function name, or E-notation
+			// A letter here triggers that we are looking at either start of a unary function name, or E-notation
 			// If leadingChar is lower-case, convert it to uppercase to facilitate comparison w/our list of unaries.
 			leadingChar = strings.ToUpper(leadingChar)
 			*expression = (*expression)[1:]

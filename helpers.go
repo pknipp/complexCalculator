@@ -144,13 +144,13 @@ func handler(expression string) (string, [][2]string, [][2]string) {
 				powString = strconv.Itoa(int(math.Abs(real(power))))
 			}
 		} else {
-			powString = fmt.Sprintf("%f", real(power))
+			powString = fmt.Sprintf("%.2f", real(power))
 		}
 		if imag(power) != 0. {
 			if float64(imFloat) == imag(power) {
 				powString += "+" + strconv.Itoa(int(math.Abs(imag(power)))) + "i"
 			} else {
-				powString += "+" + fmt.Sprintf("%f", math.Abs(imag(power))) + "i"
+				powString += "+" + fmt.Sprintf("%.2f", math.Abs(imag(power))) + "i"
 			}
 		}
 		if real(power) > 0 {
