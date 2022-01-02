@@ -153,8 +153,7 @@ func parseExpression (expression string) (quantityType, string) {
 		}
 	}
 	// val is lead quantity, and nextVal is any of the following ones
-	val := quantityType{val: 0, units: nil}
-	nextVal := quantityType{val: 0, units: nil}
+	val, nextVal := quantityType{val: 0, units: nil}, quantityType{val: 0, units: nil}
 	pairs := []opNum{}
 	// trim&store leading number from expression
 	val, message = getNumber(&expression)

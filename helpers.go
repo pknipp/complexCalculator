@@ -86,7 +86,7 @@ func binary(z1 quantityType, op string, z2 quantityType) (quantityType, string) 
 				result = quantityType{val: cmplx.Pow(z1.val, z2.val), units: units}
 			}
 		default:
-			// I think that this'll never be hit, because of my use of OPS in an outer function.
+			// I think that this'll never be hit, because of my use of OPS in parseExpression.
 			message = "The operation " + op + " is unknown."
 	}
 	return result, message
@@ -182,5 +182,5 @@ func handler(expression string) (string, [][2]string, [][2]string) {
 	if real(result.val) == 0 && imag(result.val) == 0 {
 		resultString = "0"
 	}
-	return resultString, posUnits, negUnits //+ unitString
+	return resultString, posUnits, negUnits
 }

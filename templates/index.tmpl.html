@@ -56,6 +56,26 @@
             </ul>
           </li>
           <li>
+            <a href="https://en.wikipedia.org/wiki/International_System_of_UnitsUnits">units:</a>
+            <ul>
+              <li>The following set of metric units may be used in abbreviated form: kg (kilogram), m (meter), s (second), K (kelvin), A (ampere).</li>
+              <li>Units are incorporated into your expression by multiplication, which you may indicate either explicitly (ie, with "*") or implicitly.</li>
+              <li>The standard rules apply to the use of units in mathematical expressions:
+                <ul>
+                  <li>
+                    Only quantities with identical units may be added or subtracted.
+                  </li>
+                  <li>
+                    When multiplying or dividing quantities with units, the unit of the result equals the corresponding operation of the units of the input quantities.
+                  </li>
+                  <li>
+                    For non-"basic" unary functions (See below.), the argument should be dimensionless, as is the value.  For all "basic" functions except for Sqrt, the unit of the value should equal the unit of the argument.  For Sqrt, the unit of the value equals the square root of the unit of the argument.
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+          <li>
             <a href="https://en.wikipedia.org/wiki/Unary_operation">unary operations</a>: Below are listed the available functions, most of which are explained <a href="https://pkg.go.dev/math/cmplx">here</a>.
             <ul>
               <li>
@@ -82,7 +102,7 @@
         </ul>
       </li>
       <li>
-        EXAMPLE:
+        EXAMPLE without units:
         <ul>
           <li>
             expression: {cos<sup>-1</sup>[1.2i(3 + i)] + 4/(5 - 6i)}<sup>7 + 8i</sup>
