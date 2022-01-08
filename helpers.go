@@ -28,14 +28,9 @@ func binary(z1 quantityType, op string, z2 quantityType) (quantityType, string) 
 	var ok bool
 	haveSameUnits := func(z1, z2 quantityType) (bool, string) {
 		for _, unit := range unitSlice {
-			power1, in1 := z1.units[unit]
-			power2, in2 := z2.units[unit]
-			if in1 == in2 {
-				if power1 == power2 {
-					return true, ""
-				}
+			if z1.units[unit] != z2.units[unit] {
+				return false, "You are adding/subtracting quantities w/different units."
 			}
-			return false, "You are adding/subtracting quantities w/different units."
 		}
 		return true, ""
 	}
