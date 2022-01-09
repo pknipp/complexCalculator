@@ -26,10 +26,10 @@ func binary(z1 quantityType, op string, z2 quantityType) (quantityType, string) 
 	var result quantityType
 	var message string
 	var ok bool
-	haveSameUnits := func(z1, z2 quantityType) (bool, string) {
+	areSame := func(units1, units2 map[string]complex128) (bool, string) {
 		for _, unit := range unitSlice {
-			if z1.units[unit] != z2.units[unit] {
-				return false, "You are adding/subtracting quantities w/different units."
+			if units1[unit] != units2[unit] {
+				return false, "You tried to add/subtract quantities w/different units."
 			}
 		}
 		return true, ""
@@ -37,12 +37,12 @@ func binary(z1 quantityType, op string, z2 quantityType) (quantityType, string) 
 	units := map[string]complex128{}
 	switch op {
 		case "+":
-			ok, message = haveSameUnits(z1, z2)
+			ok, message = areSame(z1.units, z2.units)
 			if ok {
 				result = quantityType{val: z1.val + z2.val, units: z1.units}
 			}
 		case "-":
-			ok, message = haveSameUnits(z1, z2)
+			ok, message = areSame(z1.units, z2.units)
 			if ok {
 				result = quantityType{val: z1.val - z2.val, units: z1.units}
 			}
