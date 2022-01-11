@@ -6,10 +6,17 @@ import (
 	"strings"
 )
 
+type unitType struct{
+	name string
+	power complex128
+}
+
 type quantityType struct{
 	val complex128
-	units map[string]complex128
+	units [5]unitType
 }
+
+var NOUNITS quantityType
 
 func sliceContains (slice []string, char string) bool {
 	for _, thisChar := range slice {

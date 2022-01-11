@@ -8,7 +8,7 @@ import (
 	"fmt"
 )
 
-var unitSlice = []string{"kg", "m", "s", "K", "mol"}
+var UNITS = []string{"kg", "m", "s", "K", "mol"}
 
 func isLetter(char byte) bool {
 	return (char >= 'A' && char <= 'Z') || (char >= 'a' && char <= 'z')
@@ -26,9 +26,9 @@ func binary(z1 quantityType, op string, z2 quantityType) (quantityType, string) 
 	var result quantityType
 	var message string
 	var ok bool
-	areSame := func(units1, units2 map[string]complex128) (bool, string) {
-		for _, unit := range unitSlice {
-			if units1[unit] != units2[unit] {
+	areSame := func(units1, units2 [5]unitType) (bool, string) {
+		for k, _ := range UNITS {
+			if units1[k].power != units2[k].power {
 				return false, "You tried to add/subtract quantities w/different units."
 			}
 		}
@@ -47,15 +47,17 @@ func binary(z1 quantityType, op string, z2 quantityType) (quantityType, string) 
 				result = quantityType{val: z1.val - z2.val, units: z1.units}
 			}
 		case "*":
-			for _, unit := range unitSlice {
-				if power, found := z1.units[unit]; found {
-					units[unit] = power
-				}
-				if power, found := z2.units[unit]; found {
-					units[unit] += power
-				}
+			for k, _ := range UNITS {
+				// if power, found := z1.units[unit]; found {
+					// units[unit] = power
+				// }
+				// if power, found := z2.units[unit]; found {
+					// units[unit] += power
+				// }
+			// }
+				theseUnits := noUnits
+				result = quantityType{val: z1.val * z2.val, units: units}
 			}
-			result = quantityType{val: z1.val * z2.val, units: units}
 		case "/":
 			for _, unit := range unitSlice {
 				if power, found := z1.units[unit]; found {
