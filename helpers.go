@@ -23,7 +23,8 @@ func isNonzero(z complex128, m *string) bool {
 }
 
 func binary(z1 quantityType, op string, z2 quantityType) (quantityType, string) {
-	var result quantityType
+	// value & units fields of "result" will be adjusted differently by z1 in each case
+	result := z1
 	var message string
 	var ok bool
 	areSame := func(units1, units2 [5]unitType) (bool, string) {
@@ -34,53 +35,40 @@ func binary(z1 quantityType, op string, z2 quantityType) (quantityType, string) 
 		}
 		return true, ""
 	}
-	units := map[string]complex128{}
 	switch op {
 		case "+":
 			ok, message = areSame(z1.units, z2.units)
 			if ok {
-				result = quantityType{val: z1.val + z2.val, units: z1.units}
+				result.val += z2.val
 			}
 		case "-":
 			ok, message = areSame(z1.units, z2.units)
 			if ok {
-				result = quantityType{val: z1.val - z2.val, units: z1.units}
+				result.val -= z2.val
 			}
 		case "*":
-			for k, _ := range UNITS {
-				// if power, found := z1.units[unit]; found {
-					// units[unit] = power
-				// }
-				// if power, found := z2.units[unit]; found {
-					// units[unit] += power
-				// }
-			// }
-				theseUnits := noUnits
-				result = quantityType{val: z1.val * z2.val, units: units}
+			result.val *= z2.val
+			for k, unit := range z2.units {
+				result.units[k].power += unit.power
 			}
 		case "/":
-			for _, unit := range unitSlice {
-				if power, found := z1.units[unit]; found {
-					units[unit] = power
-				}
-				if power, found := z2.units[unit]; found {
-					units[unit] -= power
-				}
-			}
 			if isNonzero(z2.val, &message) {
-				result = quantityType{val: z1.val / z2.val, units: units}
+				result.val /= z2.val
+				for k, unit := range z2.units {
+					result.units[k].power -= unit.power
+				}
 			}
 		case "^":
-			for _, power := range z2.units {
-				if power != 0 {
+			for _, unit := range z2.units {
+				if unit.power != 0 {
 					return result, "An exponent cannot have units."
 				}
 			}
-			for unit, power := range z1.units {
-				units[unit] = power * z2.val
+			for k, _ := range z1.units {
+				result.units[k].power *= z2.val
 			}
 			if real(z2.val) > 0 || isNonzero(z1.val, &message) {
-				result = quantityType{val: cmplx.Pow(z1.val, z2.val), units: units}
+				result.val = cmplx.Pow(z1.val, z2.val)
 			}
 		default:
 			// I think that this'll never be hit, because of my use of OPS in parseExpression.

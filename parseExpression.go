@@ -16,7 +16,14 @@ type quantityType struct{
 	units [5]unitType
 }
 
-var NOUNITS quantityType
+func newOne () quantityType {
+	var one quantityType
+	one.val = complex(1., 0.)
+	for j, _ := range UNITS {
+		one.units[j].power = complex(0., 0.)
+	}
+	return one
+}
 
 func sliceContains (slice []string, char string) bool {
 	for _, thisChar := range slice {
