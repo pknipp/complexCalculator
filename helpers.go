@@ -25,9 +25,12 @@ func isNonzero(z complex128, m *string) bool {
 func binary(z1 quantityType, op string, z2 quantityType) (quantityType, string) {
 	// value & units fields of "result" will be adjusted differently by z1 in each case
 	result := z1
+	if len(result.units) == 0 {
+		result = newOne()
+	}
 	var message string
 	var ok bool
-	areSame := func(units1, units2 [5]unitType) (bool, string) {
+	areSame := func(units1, units2 []unitType) (bool, string) {
 		for k, _ := range UNITS {
 			if units1[k].power != units2[k].power {
 				return false, "You tried to add/subtract quantities w/different units."
@@ -74,6 +77,7 @@ func binary(z1 quantityType, op string, z2 quantityType) (quantityType, string) 
 			// I think that this'll never be hit, because of my use of OPS in parseExpression.
 			message = "The operation " + op + " is unknown."
 	}
+	fmt.Println("z1/op/z2/result.val = ", z1, op, z2, result.val)
 	return result, message
 }
 
@@ -119,29 +123,29 @@ func handler(expression string) (string, [][2]string, [][2]string) {
 	}
 	realPart := strconv.FormatFloat(real(result.val), 'f', -1, 64)
 	imagPart := strconv.FormatFloat(math.Abs(imag(result.val)), 'f', -1, 64)
-	for unit, power := range result.units {
+	for _, unit := range result.units {
 		var powString string
-		reFloat, imFloat := int(real(power)), int(imag(power))
-		if float64(reFloat) == real(power) {
-			if math.Abs(real(power)) == 1. {
+		reFloat, imFloat := int(real(unit.power)), int(imag(unit.power))
+		if float64(reFloat) == real(unit.power) {
+			if math.Abs(real(unit.power)) == 1. {
 				powString = ""
 			} else {
-				powString = strconv.Itoa(int(math.Abs(real(power))))
+				powString = strconv.Itoa(int(math.Abs(real(unit.power))))
 			}
 		} else {
-			powString = fmt.Sprintf("%.2f", real(power))
+			powString = fmt.Sprintf("%.2f", real(unit.power))
 		}
-		if imag(power) != 0. {
-			if float64(imFloat) == imag(power) {
-				powString += "+" + strconv.Itoa(int(math.Abs(imag(power)))) + "i"
+		if imag(unit.power) != 0. {
+			if float64(imFloat) == imag(unit.power) {
+				powString += "+" + strconv.Itoa(int(math.Abs(imag(unit.power)))) + "i"
 			} else {
-				powString += "+" + fmt.Sprintf("%.2f", math.Abs(imag(power))) + "i"
+				powString += "+" + fmt.Sprintf("%.2f", math.Abs(imag(unit.power))) + "i"
 			}
 		}
-		if real(power) > 0 {
-			posUnits = append(posUnits, [2]string{unit,  powString})
+		if real(unit.power) > 0 {
+			posUnits = append(posUnits, [2]string{unit.name,  powString})
 		} else {
-			negUnits = append(negUnits, [2]string{unit,  powString})
+			negUnits = append(negUnits, [2]string{unit.name,  powString})
 		}
 	}
 	var resultString string

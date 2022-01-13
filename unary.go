@@ -2,9 +2,9 @@ package main
 
 import "math/cmplx"
 
-func areNil (units map[string]complex128, method string, message *string) bool {
-	for _, power := range units {
-		if power != complex(0., 0.) {
+func areNone (units []unitType, method string, message *string) bool {
+	for _, unit := range units {
+		if unit.power != complex(0., 0.) {
 			*message = "The argument of " + method + " must be dimensionless."
 			return false
 		}
@@ -13,170 +13,176 @@ func areNil (units map[string]complex128, method string, message *string) bool {
 }
 
 func unary (method string, quantity quantityType) (quantityType, string) {
+	if len(quantity.units) == 0 {
+		quantity = newOne()
+	}
 	z := quantity.val
-	argUnits := quantity.units
-	units := map[string]complex128{}
+	// The following'll get overwritten by Abs,
+	units := noUnits()
 	ONE := complex(1., 0.)
-	var result complex128
+	var val complex128
 	var message string
 	switch method {
 		case "Abs":
-			result = complex(cmplx.Abs(z), 0.)
-			units = argUnits
+			val = complex(cmplx.Abs(z), 0.)
+			units = quantity.units
 		case "Acos":
-			if areNil(argUnits, method, &message) {
-				result = cmplx.Acos(z)
+			if areNone(quantity.units, method, &message) {
+				val = cmplx.Acos(z)
 			}
 		case "Acosh":
-			if areNil(argUnits, method, &message) {
-				result = cmplx.Acosh(z)
+			if areNone(quantity.units, method, &message) {
+				val = cmplx.Acosh(z)
 			}
 		case "Acot":
-			if areNil(argUnits, method, &message) {
+			if areNone(quantity.units, method, &message) {
 				if isNonzero(z, &message) {
-					result = cmplx.Atan(ONE/z)
+					val = cmplx.Atan(ONE/z)
 				}
 			}
 		case "Acoth":
-			if areNil(argUnits, method, &message) {
+			if areNone(quantity.units, method, &message) {
 				if isNonzero(z, &message) {
-					result = cmplx.Atanh(ONE/z)
+					val = cmplx.Atanh(ONE/z)
 				}
 			}
 		case "Acsc":
-			if areNil(argUnits, method, &message) {
+			if areNone(quantity.units, method, &message) {
 				if isNonzero(z, &message) {
-					result = cmplx.Asin(ONE/z)
+					val = cmplx.Asin(ONE/z)
 				}
 			}
 		case "Acsch":
-			if areNil(argUnits, method, &message) {
+			if areNone(quantity.units, method, &message) {
 				if isNonzero(z, &message) {
-					result = cmplx.Asinh(ONE/z)
+					val = cmplx.Asinh(ONE/z)
 				}
 			}
 		case "Asec":
-			if areNil(argUnits, method, &message) {
+			if areNone(quantity.units, method, &message) {
 				if isNonzero(z, &message) {
-					result = cmplx.Acos(ONE/z)
+					val = cmplx.Acos(ONE/z)
 				}
 			}
 		case "Asech":
-			if areNil(argUnits, method, &message) {
+			if areNone(quantity.units, method, &message) {
 				if isNonzero(z, &message) {
-					result = cmplx.Acosh(ONE/z)
+					val = cmplx.Acosh(ONE/z)
 				}
 			}
 		case "Asin":
-			if areNil(argUnits, method, &message) {
-				result = cmplx.Asin(z)
+			if areNone(quantity.units, method, &message) {
+				val = cmplx.Asin(z)
 			}
 		case "Asinh":
-			if areNil(argUnits, method, &message) {
-				result = cmplx.Asinh(z)
+			if areNone(quantity.units, method, &message) {
+				val = cmplx.Asinh(z)
 			}
 		case "Atan":
-			if areNil(argUnits, method, &message) {
-				result = cmplx.Atan(z)
+			if areNone(quantity.units, method, &message) {
+				val = cmplx.Atan(z)
 			}
 		case "Atanh":
-			if areNil(argUnits, method, &message) {
-				result = cmplx.Atanh(z)
+			if areNone(quantity.units, method, &message) {
+				val = cmplx.Atanh(z)
 			}
 		case "Conj":
-			result = cmplx.Conj(z)
+			val = cmplx.Conj(z)
+			units = quantity.units
 		case "Cos":
-			if areNil(argUnits, method, &message) {
-				result = cmplx.Cos(z)
+			if areNone(quantity.units, method, &message) {
+				val = cmplx.Cos(z)
 			}
 		case "Cosh":
-			if areNil(argUnits, method, &message) {
-				result = cmplx.Cosh(z)
+			if areNone(quantity.units, method, &message) {
+				val = cmplx.Cosh(z)
 			}
 		case "Cot":
-			if areNil(argUnits, method, &message) {
+			if areNone(quantity.units, method, &message) {
 				if isNonzero(z, &message) {
-					result = ONE/cmplx.Tan(z)
+					val = ONE/cmplx.Tan(z)
 				}
 			}
 		case "Coth":
-			if areNil(argUnits, method, &message) {
+			if areNone(quantity.units, method, &message) {
 				if isNonzero(z, &message) {
-					result = ONE/cmplx.Tanh(z)
+					val = ONE/cmplx.Tanh(z)
 				}
 			}
 		case "Csc":
-			if areNil(argUnits, method, &message) {
+			if areNone(quantity.units, method, &message) {
 				if isNonzero(z, &message) {
-					result = ONE/cmplx.Sin(z)
+					val = ONE/cmplx.Sin(z)
 				}
 			}
 		case "Csch":
-			if areNil(argUnits, method, &message) {
+			if areNone(quantity.units, method, &message) {
 				if isNonzero(z, &message) {
-					result = ONE/cmplx.Sinh(z)
+					val = ONE/cmplx.Sinh(z)
 				}
 			}
 		case "Exp":
-			if areNil(argUnits, method, &message) {
-				result = cmplx.Exp(z)
+			if areNone(quantity.units, method, &message) {
+				val = cmplx.Exp(z)
 			}
 		case "Imag":
-			result = complex(imag(z), 0.)
+			val = complex(imag(z), 0.)
+			units = quantity.units
 		case "Log":
-			if areNil(argUnits, method, &message) {
+			if areNone(quantity.units, method, &message) {
 				if isNonzero(z, &message) {
-					result = cmplx.Log(z)
+					val = cmplx.Log(z)
 				}
 			}
 		case "Log10":
-			if areNil(argUnits, method, &message) {
+			if areNone(quantity.units, method, &message) {
 				if isNonzero(z, &message) {
-					result = cmplx.Log10(z)
+					val = cmplx.Log10(z)
 				}
 			}
 		case "Log2":
-			if areNil(argUnits, method, &message) {
+			if areNone(quantity.units, method, &message) {
 				if isNonzero(z, &message) {
-					result = cmplx.Log(z)/cmplx.Log(complex(2., 0.))
+					val = cmplx.Log(z)/cmplx.Log(complex(2., 0.))
 				}
 			}
 		case "Phase":
-			result = complex(cmplx.Phase(z), 0.)
+			val = complex(cmplx.Phase(z), 0.)
 		case "Real":
-			result = complex(real(z), 0.)
+			val = complex(real(z), 0.)
+			units = quantity.units
 		case "Sec":
-			if areNil(argUnits, method, &message) {
-				result = ONE/cmplx.Cos(z)
+			if areNone(quantity.units, method, &message) {
+				val = ONE/cmplx.Cos(z)
 			}
 		case "Sech":
-			if areNil(argUnits, method, &message) {
-				result = ONE/cmplx.Cosh(z)
+			if areNone(quantity.units, method, &message) {
+				val = ONE/cmplx.Cosh(z)
 			}
 		case "Sin":
-			if areNil(argUnits, method, &message) {
-				result = cmplx.Sin(z)
+			if areNone(quantity.units, method, &message) {
+				val = cmplx.Sin(z)
 			}
 		case "Sinh":
-			if areNil(argUnits, method, &message) {
-				result = cmplx.Sinh(z)
+			if areNone(quantity.units, method, &message) {
+				val = cmplx.Sinh(z)
 			}
 		case "Sqrt":
-			result = cmplx.Sqrt(z)
-			units = map[string]complex128{}
-			for unit, power := range argUnits {
-				units[unit] = power / complex(2., 0.)
+			val = cmplx.Sqrt(z)
+			units = quantity.units
+			for k, _ := range quantity.units {
+				units[k].power /= complex(2., 0.)
 			}
 		case "Tan":
-			if areNil(argUnits, method, &message) {
-				result = cmplx.Tan(z)
+			if areNone(quantity.units, method, &message) {
+				val = cmplx.Tan(z)
 			}
 		case "Tanh":
-			if areNil(argUnits, method, &message) {
-				result = cmplx.Tanh(z)
+			if areNone(quantity.units, method, &message) {
+				val = cmplx.Tanh(z)
 			}
 		default:
 			message = method + " is a nonexistent function.  Check your spelling."
 	}
-	return quantityType{result, units}, message
+	return quantityType{val, units}, message
 }

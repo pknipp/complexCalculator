@@ -13,25 +13,34 @@ type unitType struct{
 
 type quantityType struct{
 	val complex128
-	units [5]unitType
+	units []unitType
+}
+
+func noUnits () []unitType {
+	var units = []unitType{}
+	for _, unit := range UNITS {
+		units = append(units, unitType{unit, complex(0., 0.)})
+	}
+	return units
 }
 
 func newOne () quantityType {
 	var one quantityType
 	one.val = complex(1., 0.)
-	for j, _ := range UNITS {
-		one.units[j].power = complex(0., 0.)
+	one.units = []unitType{}
+	for _, name := range UNITS {
+		one.units = append(one.units, unitType{name, complex(0., 0.)})
 	}
 	return one
 }
 
-func sliceContains (slice []string, char string) bool {
-	for _, thisChar := range slice {
+func sliceContains (slice []string, char string) (bool, int) {
+	for k, thisChar := range slice {
 		if thisChar == char {
-			return true
+			return true, k
 		}
 	}
-	return false
+	return false, -1
 }
 
 func parseExpression (expression string) (quantityType, string) {
@@ -41,6 +50,7 @@ func parseExpression (expression string) (quantityType, string) {
 	expression = doRegExp(expression)
 	getNumber := func(expression *string) (quantityType, string){
 		var val quantityType
+		val.units = noUnits()
 		message := ""
 		if len(*expression) == 0 {
 			return val, "Your expression truncates prematurely."
@@ -64,20 +74,32 @@ func parseExpression (expression string) (quantityType, string) {
 			return val, message
 		} else if leadingChar == "i" {
 			*expression = (*expression)[1:]
-			return quantityType{val: complex(0, 1), units: nil}, message
+			quantity := newOne()
+			quantity.val = complex(0, 1)
+			return quantity, message
 		} else if len(*expression) > 2 && (*expression)[0:3] == "mol" {
+			_, k := sliceContains(UNITS, "mol")
 			*expression = (*expression)[3:]
-			units := map[string]complex128{"mol": complex(1., 0.)}
-			return quantityType{val: complex(1, 0), units: units}, message
-		} else if sliceContains(unitSlice, leadingChar) {
+			quantity := newOne()
+			units := noUnits()
+			units[k].power = complex(1., 0.)
+			quantity.units = units
+			return quantity, message
+		} else if ok, k := sliceContains(UNITS, leadingChar); ok {
 			*expression = (*expression)[1:]
-			units := map[string]complex128{}
-			units[leadingChar] = complex(1., 0.)
-			return quantityType{val: complex(1, 0), units: units}, message
+			quantity := newOne()
+			units :=noUnits()
+			units[k].power = complex(1., 0.)
+			quantity.units = units
+			return quantity, message
 		} else if len(*expression) > 1 && (*expression)[0:2] == "kg" {
+			_, k:= sliceContains(UNITS, "kg")
 			*expression = (*expression)[2:]
-			units := map[string]complex128{"kg": complex(1., 0.)}
-			return quantityType{val: complex(1, 0), units: units}, message
+			quantity := newOne()
+			units := noUnits()
+			units[k].power = complex(1., 0.)
+			quantity.units = units
+			return quantity, message
 		} else if isLetter(leadingChar[0]) {
 			// A letter here triggers that we are looking at either start of a unary function name, or E-notation
 			// If leadingChar is lower-case, convert it to uppercase to facilitate comparison w/our list of unaries.
@@ -147,7 +169,7 @@ func parseExpression (expression string) (quantityType, string) {
 					if num, err := strconv.ParseFloat(z, 64); err != nil {
 						break
 					} else {
-						val = quantityType{val: complex(num, 0.), units: nil}
+						val = quantityType{val: complex(num, 0.), units: noUnits()}
 						message = ""
 					}
 				}
