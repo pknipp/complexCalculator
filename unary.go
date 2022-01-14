@@ -13,13 +13,13 @@ func areNone (units []unitType, method string, message *string) bool {
 }
 
 func unary (method string, quantity quantityType) (quantityType, string) {
-	if len(quantity.units) == 0 {
-		quantity = newOne()
-	}
+	ONE := newONE()
+	// A few cases (Abs, Re, Imag, Cong, Sqrt) will overwrite these units.
+	units := newUnits(-1)
+	// if len(quantity.units) == 0 {
+		// quantity = quantityType{ONE, units}
+	// }
 	z := quantity.val
-	// The following'll get overwritten by Abs,
-	units := noUnits()
-	ONE := complex(1., 0.)
 	var val complex128
 	var message string
 	switch method {

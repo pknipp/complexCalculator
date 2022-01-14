@@ -51,7 +51,7 @@ func main() {
 		})
 		router.Run(":" + port)
 	} else {
-		expression := "2*m"
+		expression := "2m+3m"
 		result, message := parseExpression(expression)
 		fmt.Println(result, message)
 		// fmt.Println(handler(expression))

@@ -22,22 +22,31 @@ func isNonzero(z complex128, m *string) bool {
 	return !isZero
 }
 
+func areSame(units1, units2 []unitType) (bool, string) {
+	for k, _ := range UNITS {
+		if units1[k].power != units2[k].power {
+			return false, "You tried to add/subtract quantities w/different units."
+		}
+	}
+	return true, ""
+}
+
 func binary(z1 quantityType, op string, z2 quantityType) (quantityType, string) {
-	// value & units fields of "result" will be adjusted differently by z1 in each case
+	// value & units fields of "result" will be adjusted differently from those of z1 in each case
 	result := z1
 	if len(result.units) == 0 {
-		result = newOne()
+		result = quantityType{complex(0., 0.), newUnits(-1)}
 	}
 	var message string
 	var ok bool
-	areSame := func(units1, units2 []unitType) (bool, string) {
-		for k, _ := range UNITS {
-			if units1[k].power != units2[k].power {
-				return false, "You tried to add/subtract quantities w/different units."
-			}
-		}
-		return true, ""
-	}
+	// areSame := func(units1, units2 []unitType) (bool, string) {
+		// for k, _ := range UNITS {
+			// if units1[k].power != units2[k].power {
+				// return false, "You tried to add/subtract quantities w/different units."
+			// }
+		// }
+		// return true, ""
+	// }
 	switch op {
 		case "+":
 			ok, message = areSame(z1.units, z2.units)
