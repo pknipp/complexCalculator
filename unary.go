@@ -16,9 +16,6 @@ func unary (method string, quantity quantityType) (quantityType, string) {
 	ONE := newONE()
 	// A few cases (Abs, Re, Imag, Cong, Sqrt) will overwrite these units.
 	units := newUnits(-1)
-	// if len(quantity.units) == 0 {
-		// quantity = quantityType{ONE, units}
-	// }
 	z := quantity.val
 	var val complex128
 	var message string
@@ -170,7 +167,7 @@ func unary (method string, quantity quantityType) (quantityType, string) {
 		case "Sqrt":
 			val = cmplx.Sqrt(z)
 			units = quantity.units
-			for k, _ := range quantity.units {
+			for k := range quantity.units {
 				units[k].power /= complex(2., 0.)
 			}
 		case "Tan":

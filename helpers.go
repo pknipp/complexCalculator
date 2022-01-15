@@ -23,7 +23,7 @@ func isNonzero(z complex128, m *string) bool {
 }
 
 func areSame(units1, units2 []unitType) (bool, string) {
-	for k, _ := range UNITS {
+	for k := range UNITS {
 		if units1[k].power != units2[k].power {
 			return false, "You tried to add/subtract quantities w/different units."
 		}
@@ -39,14 +39,6 @@ func binary(q1 quantityType, op string, q2 quantityType) (quantityType, string) 
 	}
 	var message string
 	var ok bool
-	// areSame := func(units1, units2 []unitType) (bool, string) {
-		// for k, _ := range UNITS {
-			// if units1[k].power != units2[k].power {
-				// return false, "You tried to add/subtract quantities w/different units."
-			// }
-		// }
-		// return true, ""
-	// }
 	switch op {
 		case "+":
 			ok, message = areSame(q1.units, q2.units)
@@ -76,7 +68,7 @@ func binary(q1 quantityType, op string, q2 quantityType) (quantityType, string) 
 					return quantity, "An exponent cannot have units."
 				}
 			}
-			for k, _ := range q1.units {
+			for k := range q1.units {
 				quantity.units[k].power *= q2.val
 			}
 			if real(q2.val) > 0 || isNonzero(q1.val, &message) {
@@ -86,7 +78,6 @@ func binary(q1 quantityType, op string, q2 quantityType) (quantityType, string) 
 			// I think that this'll never be hit, because of my use of OPS in parseExpression.
 			message = "The operation " + op + " is unknown."
 	}
-	fmt.Println("q1/op/q2/q = ", q1, op, q2, quantity.val)
 	return quantity, message
 }
 
@@ -109,7 +100,6 @@ func findSize (expression string) (int, string) {
 // I don't think that this function'll ever fail.
 func doRegExp(expression string) string {
 	expression = regexp.MustCompile(" ").ReplaceAllString(expression, "")
-	expression = regexp.MustCompile("j").ReplaceAllString(expression, "i")
 	expression = regexp.MustCompile(`\*\*`).ReplaceAllString(expression, "^")
 	expression = regexp.MustCompile("div").ReplaceAllString(expression, "/")
 	expression = regexp.MustCompile("DIV").ReplaceAllString(expression, "/")

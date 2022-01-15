@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"math/cmplx"
 	"strconv"
 	"strings"
@@ -49,12 +48,12 @@ func parseExpression (expression string) (quantityType, string) {
 	TEN := complex(10., 0.)
 	ZERO := complex(0., 0.)
 	ONE := newONE()
-	quantity := quantityType{ZERO, newUnits(-1)}
 	message := ""
 	// Following pre-processing line is needed if/when this code is tested in a non-server configuration.
 	expression = doRegExp(expression)
 	getQuantity := func(expression *string) (quantityType, string){
 		message := ""
+		quantity := quantityType{ZERO, newUnits(-1)}
 		if len(*expression) == 0 {
 			return quantity, "Your expression truncates prematurely."
 		}
@@ -75,7 +74,7 @@ func parseExpression (expression string) (quantityType, string) {
 			// From expression remove trailing parenthesis and stuff preceding it.
 			*expression = (*expression)[nExpression + 1:]
 			return quantity, message
-		} else if leadingChar == "i" {
+		} else if (leadingChar == "i" || leadingChar == "j") {
 			*expression = (*expression)[1:]
 			quantity.val = complex(0, 1)
 			return quantity, message
@@ -125,11 +124,9 @@ func parseExpression (expression string) (quantityType, string) {
 				if len(message) != 0 {
 					return quantity, message
 				}
-				// quantity, message := unary(method, arg)
 				// Trim argument of unary from beginning of expression
 				*expression = (*expression)[nExpression + 1:]
 				return unary(method, arg)
-				// return quantityType{val: quantity.val, units: quantity.units}, message
 			} else if leadingChar[0] == 'E' {
 				// If expression is not a unary, the user is representing scientific notation with an "E"
 				message = "Your scientific notation (the start of " + leadingChar + *expression + ") is improperly formatted."
@@ -174,7 +171,7 @@ func parseExpression (expression string) (quantityType, string) {
 		return quantity, "Could not parse " + leadingChar + *expression
 	}
 	// struct fields consist of binary operation and 2nd number of the pair
-	type opNum struct {
+	type opQuant struct {
 		op string
 		quantity quantityType
 	}
@@ -185,12 +182,9 @@ func parseExpression (expression string) (quantityType, string) {
 			expression = expression[1:]
 		}
 	}
-	// val is lead quantity, and nextVal is any of the following ones
-	// quantity := quantityType{ZERO, newUnits(-1)}
-	// val, nextQuantity := quantityType{val: 0, units: nil}, quantityType{val: 0, units: nil}
-	pairs := []opNum{}
+	pairs := []opQuant{}
 	// trim&store leading number from expression
-	quantity, message = getQuantity(&expression)
+	quantity, message := getQuantity(&expression)
 	if len(message) != 0 {
 		return quantity, message
 	}
@@ -208,10 +202,9 @@ func parseExpression (expression string) (quantityType, string) {
 		if nextQuantity, message := getQuantity(&expression); len(message) != 0 {
 			return nextQuantity, message
 		} else {
-			pairs = append(pairs, opNum{op, nextQuantity})
+			pairs = append(pairs, opQuant{op, nextQuantity})
 		}
 	}
-	fmt.Println(pairs)
 	// loop thru "pairs" slice, evaluating operations in order of their precedence
 	for len(pairs) > 0 {
 		index := 0
