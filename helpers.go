@@ -143,7 +143,7 @@ func handler(expression string) (string, [][2]string, [][2]string) {
 		}
 		if real(unit.power) > 0 {
 			posUnits = append(posUnits, [2]string{unit.name,  powString})
-		} else {
+		} else if real(unit.power) < 0 {
 			negUnits = append(negUnits, [2]string{unit.name,  powString})
 		}
 	}
