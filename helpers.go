@@ -31,11 +31,11 @@ func areSame(units1, units2 []unitType) (bool, string) {
 	return true, ""
 }
 
-func binary(z1 quantityType, op string, z2 quantityType) (quantityType, string) {
+func binary(q1 quantityType, op string, q2 quantityType) (quantityType, string) {
 	// value & units fields of "result" will be adjusted differently from those of z1 in each case
-	result := z1
-	if len(result.units) == 0 {
-		result = quantityType{complex(0., 0.), newUnits(-1)}
+	quantity := q1
+	if len(quantity.units) == 0 {
+		quantity = quantityType{complex(0., 0.), newUnits(-1)}
 	}
 	var message string
 	var ok bool
@@ -49,45 +49,45 @@ func binary(z1 quantityType, op string, z2 quantityType) (quantityType, string) 
 	// }
 	switch op {
 		case "+":
-			ok, message = areSame(z1.units, z2.units)
+			ok, message = areSame(q1.units, q2.units)
 			if ok {
-				result.val += z2.val
+				quantity.val += q2.val
 			}
 		case "-":
-			ok, message = areSame(z1.units, z2.units)
+			ok, message = areSame(q1.units, q2.units)
 			if ok {
-				result.val -= z2.val
+				quantity.val -= q2.val
 			}
 		case "*":
-			result.val *= z2.val
-			for k, unit := range z2.units {
-				result.units[k].power += unit.power
+			quantity.val *= q2.val
+			for k, unit := range q2.units {
+				quantity.units[k].power += unit.power
 			}
 		case "/":
-			if isNonzero(z2.val, &message) {
-				result.val /= z2.val
-				for k, unit := range z2.units {
-					result.units[k].power -= unit.power
+			if isNonzero(q2.val, &message) {
+				quantity.val /= q2.val
+				for k, unit := range q2.units {
+					quantity.units[k].power -= unit.power
 				}
 			}
 		case "^":
-			for _, unit := range z2.units {
+			for _, unit := range q2.units {
 				if unit.power != 0 {
-					return result, "An exponent cannot have units."
+					return quantity, "An exponent cannot have units."
 				}
 			}
-			for k, _ := range z1.units {
-				result.units[k].power *= z2.val
+			for k, _ := range q1.units {
+				quantity.units[k].power *= q2.val
 			}
-			if real(z2.val) > 0 || isNonzero(z1.val, &message) {
-				result.val = cmplx.Pow(z1.val, z2.val)
+			if real(q2.val) > 0 || isNonzero(q1.val, &message) {
+				quantity.val = cmplx.Pow(q1.val, q2.val)
 			}
 		default:
 			// I think that this'll never be hit, because of my use of OPS in parseExpression.
 			message = "The operation " + op + " is unknown."
 	}
-	fmt.Println("z1/op/z2/result.val = ", z1, op, z2, result.val)
-	return result, message
+	fmt.Println("q1/op/q2/q = ", q1, op, q2, quantity.val)
+	return quantity, message
 }
 
 func findSize (expression string) (int, string) {

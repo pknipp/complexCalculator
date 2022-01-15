@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"math/cmplx"
 	"strconv"
 	"strings"
@@ -35,13 +36,13 @@ func newUnits (index int) []unitType {
 	// return quantityType{val, newUnits(index)}
 // }
 
-func sliceContains (slice []string, char string) (bool, int) {
+func sliceContains (slice []string, char string) int {
 	for k, thisChar := range slice {
 		if thisChar == char {
-			return true, k
+			return k
 		}
 	}
-	return false, -1
+	return -1
 }
 
 func parseExpression (expression string) (quantityType, string) {
@@ -79,15 +80,15 @@ func parseExpression (expression string) (quantityType, string) {
 			quantity.val = complex(0, 1)
 			return quantity, message
 		} else if len(*expression) > 2 && (*expression)[0:3] == "mol" {
-			_, k := sliceContains(UNITS, "mol")
+			k := sliceContains(UNITS, "mol")
 			*expression = (*expression)[3:]
 			return quantityType{ONE, newUnits(k)}, message
-		} else if ok, k := sliceContains(UNITS, leadingChar); ok {
+		} else if k := sliceContains(UNITS, leadingChar); k >= 0 {
 			*expression = (*expression)[1:]
 			units := newUnits(k)
 			return quantityType{ONE, units}, message
 		} else if len(*expression) > 1 && (*expression)[0:2] == "kg" {
-			_, k:= sliceContains(UNITS, "kg")
+			k:= sliceContains(UNITS, "kg")
 			*expression = (*expression)[2:]
 			units := newUnits(k)
 			return quantityType{ONE, units}, message
@@ -210,6 +211,7 @@ func parseExpression (expression string) (quantityType, string) {
 			pairs = append(pairs, opNum{op, nextQuantity})
 		}
 	}
+	fmt.Println(pairs)
 	// loop thru "pairs" slice, evaluating operations in order of their precedence
 	for len(pairs) > 0 {
 		index := 0
