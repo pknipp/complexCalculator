@@ -51,7 +51,7 @@ func main() {
 		})
 		router.Run(":" + port)
 	} else {
-		expression := "Conj(9m**2(1-i))"
+		expression := "-(4-i)Sin(1.57(1))"
 		result, message := parseExpression(expression)
 		fmt.Println(result, message)
 		// fmt.Println(handler(expression))

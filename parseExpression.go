@@ -146,27 +146,33 @@ func parseExpression (expression string) (quantityType, string) {
 				return quantity, message
 			}
 		} else {
+			foundValue := false
 			// The following'll change only if strconv.ParseFloat ever returns no error, below.
 			message = "The string '" + *expression + "' does not evaluate to a number."
 			p := 1
+			z := ""
 			for len(*expression) >= p {
-				// If implied multiplication is detected ...
-				if  z := (*expression)[0:p]; (*expression)[p - 1: p] == "(" {
-					// ... insert a "*" symbol.
-					*expression = (*expression)[0:p - 1] + "*" + (*expression)[p - 1:]
-					break
-				} else if !(z == "." || z == "-" || z == "-.") {
+				z = (*expression)[0:p]
+				if !(z == "." || z == "-" || z == "-.") {
 					if num, err := strconv.ParseFloat(z, 64); err != nil {
 						break
 					} else {
 						quantity.val = complex(num, 0.)
+						foundValue = true
 						message = ""
 					}
 				}
 				p++
 			}
-			*expression = (*expression)[p - 1:]
-			return quantity, message
+			// example of edge cases trapped by following: -sin(x) or -(x+1)**2
+			if (z[:1] == "-" && p == 2 && len(*expression) > 1) {
+				quantity.val = complex(-1., 0.)
+				foundValue = true
+			}
+			if foundValue {
+				*expression = (*expression)[p - 1:]
+				return quantity, ""
+			}
 		}
 		return quantity, "Could not parse " + leadingChar + *expression
 	}
