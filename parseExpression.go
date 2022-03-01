@@ -174,7 +174,7 @@ func parseExpression (expression string) (quantityType, string) {
 				return quantity, ""
 			}
 		}
-		return quantity, "Could not parse " + leadingChar + *expression
+		return quantity, "Could not parse " + *expression
 	}
 	// struct fields consist of binary operation and 2nd number of the pair
 	type opQuant struct {
