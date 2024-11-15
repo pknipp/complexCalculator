@@ -3,26 +3,28 @@
         <title>result</title>
     </head>
     <body>
-        <h4><p align=center>Result for complex calculation</p></h4>
-        <p align=center>
-            <a href="https://complex-calculator-2nd-f1d5dad4b63b.herokuapp.com">
-                Return
-            </a>
-            to the Instruction page.
-            <br/><br/>
-            <table border='1'>
-                <tr>
-                    <td>{{ .expressionText}}</td>
-                    <td>{{ .expressionValue}}</td>
-                </tr>
-                <tr>
-                    <td>{{ .resultText}}</td>
-                    <td>{{ .resultValue}}
-                        {{range $i, $pair := .posUnits}}{{index $pair 0}}<sup>{{index $pair 1}}</sup>
-                        {{end}}{{range $i, $pair := .negUnits}}&sol;{{index $pair 0}}<sup>{{index $pair 1}}</sup>{{end}}
-                    </td>
-                </tr>
-            </table>
+        <div class="container">
+            <h4><p align=center>Result for complex calculation</p></h4>
+            <p align=center>
+                <a href="https://complex-calculator-2nd-f1d5dad4b63b.herokuapp.com">
+                    Return
+                </a>
+                to the Instruction page.
+                <br/><br/>
+                <table border='1'>
+                    <tr>
+                        <td>{{ .expressionText}}</td>
+                        <td>{{ .expressionValue}}</td>
+                    </tr>
+                    <tr>
+                        <td>{{ .resultText}}</td>
+                        <td>{{ .resultValue}}
+                            {{range $i, $pair := .posUnits}}{{index $pair 0}}<sup>{{index $pair 1}}</sup>
+                            {{end}}{{range $i, $pair := .negUnits}}&sol;{{index $pair 0}}<sup>{{index $pair 1}}</sup>{{end}}
+                        </td>
+                    </tr>
+                </table>
+            </p>
         </div>
     </body>
 </html>
