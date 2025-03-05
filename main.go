@@ -40,7 +40,7 @@ func main() {
 					"negUnits": negUnits,
 			})
 		})
-		router.GET("/json/:expression", func(c *gin.Context) {
+		router.GET("/api/:expression", func(c *gin.Context) {
 			expression := doRegExp(c.Param("expression"))
 			resultValue, _, _ := handler(expression)
 			resultString := "{\"" + expressionText + "\": " + expression + ", \"" + resultText + "\": " + resultValue + "}"
