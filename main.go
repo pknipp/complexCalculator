@@ -38,6 +38,9 @@ func main() {
 					"resultValue": resultValue,
 					"posUnits": posUnits,
 					"negUnits": negUnits,
+					"baseUrl": "https://complex-calculator-2nd-f1d5dad4b63b.herokuapp.com",
+					"frag1": "/(Acos(1.2i(3+i))+4d(5-6i))**(7+8i)",
+					"frag2": "3mds+4mds**2*5s",
 			})
 		})
 		router.GET("/api/:expression", func(c *gin.Context) {
